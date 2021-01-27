@@ -2,9 +2,11 @@
 
 1. ID-porten tillet ikkje at public-klienter kan få refresh_token, sidan dei ikkje kan bevise kven dei er (klient-autentisering) ved forsøk på refresh.
 
-2. ID-portens støttar ikkje "silent renewal" (prompt=none), pga. begresningar i produktet som ID-porten er basert på.
+1. ID-portens støttar ikkje "silent renewal" (prompt=none), pga. begresningar i produktet som ID-porten er basert på.
 
-3. Browsere innfører strengare handtering av 3djeparts-cookies, som gjer at iframe-baserte metodar som "silent renewal" uansett ikkje vil  fungere i framtida
+1. ID-porten støtter ikke OIDC session management og annonserer heller ikke `check_session_iframe`
+
+1. Browsere innfører strengare handtering av 3djeparts-cookies, som gjer at iframe-baserte metodar som "silent renewal" uansett ikkje vil  fungere i framtida
 https://leastprivilege.com/2020/03/31/spas-are-dead/ :
 
 > What this basically means is, that browser are getting more and more strict with how they handle their cookies. [...]  the immediate consequences will be:
