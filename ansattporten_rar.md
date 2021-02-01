@@ -20,18 +20,46 @@ MERK 2: AS kan endre authorisasjonsobjekta i responsen, basert på brukaren sine
 
 ## Mogelege typer:
 
-#### Basic ansattporten
-vil kun ha pålogging av Lønn og personalmedarbeider,  klient kjenner ikkje org. frå før:
+### Basic ansattporten
+vil kun ha pålogging av "nokon med ei viss rolle/representasjon". Klient kjenner ikkje org. frå før:
 
 Request blir lik som dagens, med følgjande tillegg:
 ```
 "authorization_details": [
   {
-    "type": "ansattporten:rolle",
-    "RoleId": 38069107
+    "type": "ansattporten:altinnressurs",
+    "ressurs": "urn:altinn:rolle:prokura"
   }
 ]
 ```
+
+
+Full datamodell
+```
+"authorization_details": [
+  {
+    "type": "ansattporten:altinnressurs",
+    "ressurs": "urn:altinn:rolle:prokura",
+    "mulige_avgivertyper": [ "foretak", "underenhet" "person"] //default:foretak
+    "avgiver_hint": { [ avgiver i iso6523] } //
+    // trengs det noko hint på brukerstyrt begrensning
+  }
+]
+```
+
+Bør kun vere Altinn-3.0-kompatible ressurser.
+
+|Ressurs-identifikator| Beskrivelse|
+|-|-|
+|urn:altinn:rolle:{rolletypekode} | Kan velge fra whitelist (ligg i Ansattporten) av Enhetsregistert og Altinn-rollene  (aktuelle er regnskapsfører). Dvs berre dei sentrale rollane som ikkje har for vide tilganger. |
+|
+
+
+For Enhetsregisteret er det typisk nokon med nøkkelroller / prokura/ (signeringsrett) som kan vere aktuelt å ha
+
+Ein del av dagens standard altinn-roller gir veldig breie tilganger.  Dette er problematisert med at de ikkje følger gode dataminimeringsprinsipp.  Derfor bør ein kanskje ikkje tilby rolle som muligheit i det heile, men heller kreve at Arbeidsgiver tjenester
+
+
 
 Bruker velger så en - og bare en - organisasjon i organisasjonsvelger.
 Respons i id_token
@@ -43,9 +71,9 @@ Respons i id_token
 ...
 "authorization_details": [
   {
-    "type": "ansattporten:rolle",
-    "RoleId": 38069107,
-    "RoleName": "L\u00f8nn og personalmedarbeider",
+    "type": "ansattporten:altinnressurs",
+    "ressurs": "urn:altinn:rolle:prokura"
+    "ressurs_name": "Noen med prokura",
     "avgiver": {
         "Authority": "iso6523-actorid-upis",
         "ID": "0192:999888777"  // org.no til arbeidsgiveren som den innlogga brukeren har valgt i org.velger
@@ -54,12 +82,30 @@ Respons i id_token
 ]
 ```
 
+### Flere søke-kriterier
+
 Dersom det er naturlig at flere roller skal ha adgang til tjenestene, sender klient inn flere autorisasjonsobjekter.
+
+```
+"authorization_details": [
+  {
+    "type": "ansattporten:altinnressurs",
+    "ressurs": "urn:altinn:enhetsregisterrolle:prokura"
+  },
+  {
+    "type": "ansattporten:altinnressurs",
+    "ressurs": "urn:altinn:enhetsregisterrolle:dagligleder"
+  }
+]
+```
 
 Organisasjonsvelger bør opplyse noe om dette, t.d.
 > Denne tjenesten støtter kun pålogging av personer som har rollene
 > * Lønn og personalmedarbeider
 > * Daglig leder
+
+
+
 
 Bruker kan fremdeles bare velge en organisasjon.  Dersom bruker har flere av de forespurte rollene i valgt organisasjon, vil responsen inneholde flere autorisasjonsobjekter.
 
@@ -75,12 +121,34 @@ TODO: dette er ganske Altinn-spesifikt,  er det mulig å lage ein noko meir gene
 ]
 ```
 
-#### Tjeneste-spesifikke "roller"
+### Lokal hurtigbytte av avgiver
+
+Formål: gjere det enkelt for proff-bukrere å kunne bytte avgire raskt.
+bruker kan velge i lokal GUI kven av dei andre tokenene
+
+1. Bruker velger org.  AP lagrer kandidatliste på autorisasjonen. Klient får token.
+2. Klient kaller dedikert endepunkt for hente kandidatliste
+3. Bruker velger ny kandidat i klient.
+4. Klient utfører tokenexchange mot AP, dersom target-reportee finst i kandidatlista utsteder AP nytt token (samme autorisasjon, ny autorisajon ?)  kandidatliste oppfriskes mot Altinn dersom eldre enn x sec.  1 versjon:  rein stateless, kaller Altinn kvar gong kandidateendepunkt eller exchange-endepunkt
+
+
+"korps kontra equinor-styreleder"-problmatikken -> bør vere eigen autorisasjontype.  eller brukerstyr swithc "ønsker å representere alle disse"  (kun en,  alle,  noen utvalgte)
+
+```
+[10:37] Langfors, Bjørn Dybvik
+/tokeninfo/reporteecandidates
+/tokenexchange?token=<token>&reportee=<fra kandidatliste>
+```
+
+
+
+
+### Tjeneste-spesifikke "roller"
 
 Dersom standardrollene ikke er formålstjenelig, må tjenesten opprette en egen "rolle" i form av en lenketjeneste i Altinn. (link til dokumentasjon).  
 
 
-Request blir lik som dagens, med følgjande tillegg:
+Request omtrent som for rolle:
 ```
 "authorization_details": [
   {
@@ -90,8 +158,8 @@ Request blir lik som dagens, med følgjande tillegg:
   }
 ]
 ```
-Må opprettes som
-#### Basic datautvekling
+
+### Basic datautvekling
 
 Dersom man ønsker datautveksling med innlogget ansatt, har vi flere valg:
 
@@ -108,16 +176,18 @@ Dersom man ønsker datautveksling med innlogget ansatt, har vi flere valg:
 
 For å utstede access_tokenvil inneholde samme struktur, men her kreves `locations`-claim i tillegg dersom den generiske "ansattporten"-prefixet skal trustes av APIet
 
-#### person-til-person representasjonsforhold
+### Person-til-person representasjonsforhold
 
 "logg inn på vegne av noen andre", eigen auth-type, for å trigge eige GUI i rar-dialog.
 
+Er dette eigen autorisasjonstype, eller bør det vere eit felt om "type avgivere som eg er interessert i"
 
 Request blir lik som dagens, med følgjande tillegg:
 ```
 "authorization_details": [
   {
     "type": "ansattporten:representasjon",
+    ""
   }
 ]
 ```
@@ -134,7 +204,7 @@ Respons i id_token
     "type": "ansattporten:representasjon",
     "RoleId": 38069107
     "påvegneav": {
-        "Authority": "iso6523-actorid-upis",
+        "Authority": "norsk_fødselsnummer",
         "ID": "31129900000"  // fødselsnummer til den som innlogga bruker ønsker å representere (og har rettighet til å representere).
     }
   }
