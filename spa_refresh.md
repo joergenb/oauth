@@ -58,8 +58,12 @@ Dominick meiner på https://leastprivilege.com/2020/01/21/hardening-refresh-toke
 OIDC har definert eit eige scope for å trigge såkalla offline access.
 https://openid.net/specs/openid-connect-core-1_0.html#OfflineAccess
 
-  Det er uklart for oss korleis dette heng saman med silent renewal-metodene.  Bør offline_access vere det som trigger at klienten faktisk får eit refresh token ?
+spec'messig så er det berre /userinfo-endepunktet som det er spesifisert at scopet skal gi tilgang til - gjer vi feil ved å bruke offline_access for rein oauth ?
 
-spec'messig så er det berre /userinfo-endepunktet som det er spesifisert at scopet skal gi tilgang til.
+Det er uklart for oss korleis dette heng saman med silent renewal-metodene.  Bør offline_access vere det som trigger at klienten faktisk får eit refresh token ?
 
 Det er også slik at i dei tilfella som har vore rapportert til oss, so har det alltid vore snakk om at brukaren faktisk er til stades i perioden.
+
+Auht0 ser ut til å bruke offline_access:
+https://auth0.com/blog/achieving-a-seamless-user-experience-with-refresh-token-inactivity-lifetimes/
+
