@@ -64,6 +64,30 @@ Det er uklart for oss korleis dette heng saman med silent renewal-metodene.  Bø
 
 Det er også slik at i dei tilfella som har vore rapportert til oss, so har det alltid vore snakk om at brukaren faktisk er til stades i perioden.
 
-Auht0 ser ut til å bruke offline_access:
-https://auth0.com/blog/achieving-a-seamless-user-experience-with-refresh-token-inactivity-lifetimes/
+# Andre produkt
 
+## Auth0 
+ser ut til å bruke 'offline_access' for å få refresh_token. Blir berre gitt til OIDC-compliant klient.
+https://auth0.com/blog/achieving-a-seamless-user-experience-with-refresh-token-inactivity-lifetimes/
+Dei støttar "refresh token rotatation", "refresh token inactiviy" og "refresh token replay detection"
+
+## c2id
+Som vanlig ganske konfigurerbar.  I utgangspunktet får alle refresh-token, men det kan globalt setjast slik at berre klienter konfigurert for å kunne bruke "grant_type=refresh" får refresh_token.
+Skiljer mellom short-lived og long-lived autorisasjons (usikkert på kva som trigger)
+Levetid mulig å sette per klient, eller bruke global setting.
+
+## curity
+skumma gjennom dok, men fann ikkje noko
+
+## identityserver
+https://identityserver4.readthedocs.io/en/latest/topics/refresh_tokens.html
+The clients needs to be explicitly authorized to request refresh tokens by setting AllowOfflineAccess to true.
+Klienten må sende "offline access" scope for å få refresh.
+Støttar rotation
+Set refreshtoken-lifetime per klient.
+Støttar replay detection (It is important to note, that a refresh token is never deleted in the database. Once it has been used, the ConsumedTime property will be set. If a token is received that has already been consumed, the default service will call a virtual method called AcceptConsumedTokenAsync.)
+
+## Azure AD
+https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#openid-connect-scopes 
+On the Microsoft identity platform (requests made to the v2.0 endpoint), your app must explicitly request the offline_access scope, to receive refresh tokens. 
+Viser ein scope-tekst "Access your data anytime"...
