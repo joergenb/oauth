@@ -28,7 +28,7 @@ Request blir lik som dagens, med følgjande tillegg:
 "authorization_details": [
   {
     "type": "ansattporten:altinnressurs",
-    "ressurs": "urn:altinn:rolle:prokura"
+    "ressurs": "urn:altinn:role:rolletypekode"
   }
 ]
 ```
@@ -39,27 +39,24 @@ Full datamodell
 "authorization_details": [
   {
     "type": "ansattporten:altinnressurs",
-    "ressurs": "urn:altinn:rolle:prokura",
-    "mulige_avgivertyper": [ "foretak", "underenhet" "person"] //default:foretak
-    "avgiver_hint": { [ avgiver i iso6523] } //
-    // trengs det noko hint på brukerstyrt begrensning
+    "ressurs": "urn:altinn:[resource eller role]:[identifikator]",
+    "mulige_avgivertyper": [ "foretak", "bedrift", "person"] // default: foretak
+    "avgiver_hint": { [ avgiver i iso6523] } // trengs det noko hint på brukerstyrt begrensning
   }
 ]
 ```
 
 Bør kun vere Altinn-3.0-kompatible ressurser.
 
-|Ressurs-identifikator| Beskrivelse|
-|-|-|
-|urn:altinn:rolle:{rolletypekode} | Kan velge fra whitelist (ligg i Ansattporten) av Enhetsregistert og Altinn-rollene  (aktuelle er regnskapsfører). Dvs berre dei sentrale rollane som ikkje har for vide tilganger. |
-|
-
+|Ressurs-identifikator| Beskrivelse|Eksempel|
+|-|-|-|
+|urn:altinn:role:{rolletypekode} | Kan velge fra whitelist av [Altinn-rollene](https://www.altinn.no/api/metadata/roledefinitions?language=1044). | altinn:role:siskd
+|urn:altinn:resource:{tjenestekode}:{tjenesteutgave} | Altinn 2 [tenestekode/utgåve](https://www.altinn.no/api/metadata?language=1044) | altinn:resource:3906:141205
+|urn:altinn:resource:{org}:{appname} | Altinn 3 [org/app](https://www.altinn.no/api/metadata?language=1044) | altinn:resource:skd:sirius
 
 For Enhetsregisteret er det typisk nokon med nøkkelroller / prokura/ (signeringsrett) som kan vere aktuelt å ha
 
-Ein del av dagens standard altinn-roller gir veldig breie tilganger.  Dette er problematisert med at de ikkje følger gode dataminimeringsprinsipp.  Derfor bør ein kanskje ikkje tilby rolle som muligheit i det heile, men heller kreve at Arbeidsgiver tjenester
-
-
+> **Mange av dagens standard Altinn-roller gir veldig breie tilganger ("Post/arkiv", "Utfyller/innsender").  Dette er problematisert med at de ikkje følger gode dataminimeringsprinsipp, og vanskeliggjør det å skulle holde oversikt over hva en gitt rolle faktisk gir tilgang til.  Derfor bør ein kanskje ikkje tilby rolle som muligheit i det heile, men heller kreve at det defineres tjenester som det spørres på. Ein mellomting er å berre godkjenna førespurnader på eit sterkt avgrensa sett med Altinn-roller.**
 
 Bruker velger så en - og bare en - organisasjon i organisasjonsvelger.
 Respons i id_token
@@ -72,8 +69,8 @@ Respons i id_token
 "authorization_details": [
   {
     "type": "ansattporten:altinnressurs",
-    "ressurs": "urn:altinn:rolle:prokura"
-    "ressurs_name": "Noen med prokura",
+    "ressurs": "urn:altinn:role:siskd"
+    "ressurs_name": "Begrenset signeringsrett",
     "avgiver": {
         "Authority": "iso6523-actorid-upis",
         "ID": "0192:999888777"  // org.no til arbeidsgiveren som den innlogga brukeren har valgt i org.velger
@@ -90,44 +87,30 @@ Dersom det er naturlig at flere roller skal ha adgang til tjenestene, sender kli
 "authorization_details": [
   {
     "type": "ansattporten:altinnressurs",
-    "ressurs": "urn:altinn:enhetsregisterrolle:prokura"
+    "ressurs": "urn:altinn:role:a0237"  // Ansvarlig revisor
   },
   {
     "type": "ansattporten:altinnressurs",
-    "ressurs": "urn:altinn:enhetsregisterrolle:dagligleder"
+    "ressurs": "urn:altinn:role:a0239"  // Regnskapsfører med signeringsrett
   }
 ]
 ```
 
 Organisasjonsvelger bør opplyse noe om dette, t.d.
 > Denne tjenesten støtter kun pålogging av personer som har rollene
-> * Lønn og personalmedarbeider
-> * Daglig leder
-
-
+> * Ansvarlig revisor
+> * Regnskapsfører med signeringsrett
 
 
 Bruker kan fremdeles bare velge en organisasjon.  Dersom bruker har flere av de forespurte rollene i valgt organisasjon, vil responsen inneholde flere autorisasjonsobjekter.
 
-
-TODO: dette er ganske Altinn-spesifikt,  er det mulig å lage ein noko meir generell modell ?   Eller blir det berre overengineering....
-```
-"authorization_details": [
-  {
-    "type": "ansattporten:generisk_rolle",
-    "delegation_source": "https://www.altinn.no/"
-    "RoleId": 38069107
-  }
-]
-```
-
 ### Lokal hurtigbytte av avgiver
 
-Formål: gjere det enkelt for proff-bukrere å kunne bytte avgire raskt.
-bruker kan velge i lokal GUI kven av dei andre tokenene
+Formål: gjere det enkelt for proff-bukrere å kunne bytte avgiver raskt.
+bruker kan velge i lokal GUI kven av dei andre mulege avgiverne ein ønskjer å representere
 
 1. Bruker velger org.  AP lagrer kandidatliste på autorisasjonen. Klient får token.
-2. Klient kaller dedikert endepunkt for hente kandidatliste
+2. Klient kaller dedikert endepunkt med token for hente kandidatliste
 3. Bruker velger ny kandidat i klient.
 4. Klient utfører tokenexchange mot AP, dersom target-reportee finst i kandidatlista utsteder AP nytt token (samme autorisasjon, ny autorisajon ?)  kandidatliste oppfriskes mot Altinn dersom eldre enn x sec.  1 versjon:  rein stateless, kaller Altinn kvar gong kandidateendepunkt eller exchange-endepunkt
 
@@ -135,26 +118,60 @@ bruker kan velge i lokal GUI kven av dei andre tokenene
 "korps kontra equinor-styreleder"-problmatikken -> bør vere eigen autorisasjontype.  eller brukerstyr swithc "ønsker å representere alle disse"  (kun en,  alle,  noen utvalgte)
 
 ```
-[10:37] Langfors, Bjørn Dybvik
-/tokeninfo/reporteecandidates
-/tokenexchange?token=<token>&reportee=<fra kandidatliste>
+GET /tokeninfo/avgiverliste 
+Authorization: Bearer <token>
+```
+
+gir respons:
+
+```
+[
+  {
+      "Authority": "iso6523-actorid-upis",
+      "ID": "0192:999888777",
+      "avgiver_hintet": true
+  },
+  {
+      "Authority": "iso6523-actorid-upis",
+      "ID": "0192:987654321"
+  },
+  {
+      "Authority": "norwegian-population-register", // Finnes det noe standardisert her? En ISO/UPIS for fysiske personer?
+      "ID": "11028034569"
+  },
+  {
+      "Authority": "norwegian-population-register", 
+      "ID": "411028034569" // D-nummer ..?
+  }
+]
+```
+*TODO! Identifikatorer for personer. Kan vi eksponere en liste med fnr her ..?*
+
+Denne lista kan da presenteres for sluttbruker i portalen, og valg
+
+```
+POST /tokenexchange?ny_avgiver=0192:987654321
+Authorization: Bearer <token>
+```
+
+gir respons
+
+```
+eyJhbGciOiJSUzI1NiIsImtpZCI6I... <nytt id_token>
 ```
 
 
+### Tilgangsstyring på tjenestenivå
 
-
-### Tjeneste-spesifikke "roller"
-
-Dersom standardrollene ikke er formålstjenelig, må tjenesten opprette en egen "rolle" i form av en lenketjeneste i Altinn. (link til dokumentasjon).  
+Fremfor å spørre på standardrollene er det i de fleste tilfeller å foretrekke at tjenesten oppretter en egen spesialisert autorisasjonsressurs i form av en lenketjeneste i Altinn. Tilgang til denne tjenesten kan (men må ikke) forhåndstildeles til et valgt sett med roller, f.eks. "Daglig leder". All annen tilgang må eksplisitt delegeres.
 
 
 Request omtrent som for rolle:
 ```
 "authorization_details": [
   {
-    "type": "ansattporten:tjeneste",
-    "ServiceCode": 9107
-    "ServiceEditionCode": 1
+    "type": "ansattporten:altinnressurs",
+    "ressurs": "urn:altinn:resource:5129:1"
   }
 ]
 ```
@@ -163,81 +180,23 @@ Request omtrent som for rolle:
 
 Dersom man ønsker datautveksling med innlogget ansatt, har vi flere valg:
 
-1. API-tilbyder kan stole på det generiske "ansattporten:rolle"-objektet
-  - bør validere på RoleID
+1. API-tilbyder kan stole på det generiske "ansattporten:altinnressurs"-objektet
+  - må validere på "ressurs"
   - bør kreve audience-begrensning, enten via tradisjonell `aud` eller ved `locations`-felt i autorisasjonsobjektet.
-2. API-tilbyder ønsker å tilgangstyre hvilke klienter som skal kunne bruke APIet
+
+2. API-tilbyder ønsker å tilgangstyre hvilke klienter/konsumenter som skal kunne bruke APIet
   - må lage eget autorisasjonsobjekt, må lage enkel datastruktur som Ansattporten kan validere mot
   - tilgangstyring på samme måten som scopes idag
+  
 3. API-tilbyder ønsker å tilgangstyre hvilke bruker-valgte organisasjoner som skal bruke APIet
-  - altså: klient har anna orgno enn det som den innlogga brukeren velger i org.velger
-  - sært tilfelle ?  eller meir normalt enn 2.
-  -
+  - kan bruke [tjenesteeierstyrt rettighetsregister (SRR)](https://altinn.github.io/docs/api/tjenesteeiere/funksjonelle-scenario/#tjenesteeierstyrt-rettighetsregister) i Altinn 
+    - Personer vil kun få organisasjoner/personer i sin avgiverliste som er eksplisitt gitt tilgang til tjenesten i SRR 
+    - Ikke mulig for tilgangstyrer i virksomhet A å delegere tilgang til en SRR-styrt tjeneste hvis ikke A er gitt tilgang av i SRR av tjenesteeier
+    - Eksisterende delegeringer slettes hvis tjenesteeier fjerner tilgang gitt i SRR  
+  
+For å utstede access_token vil inneholde samme struktur, men her kreves `locations`-claim i tillegg dersom den generiske "ansattporten"-prefixet skal trustes av APIet (*TODO! Hvorfor kreves locations/aud?*)
 
-For å utstede access_tokenvil inneholde samme struktur, men her kreves `locations`-claim i tillegg dersom den generiske "ansattporten"-prefixet skal trustes av APIet
+### Klient foreslår avgivere (var "Skattemelding næring"):
 
-### Person-til-person representasjonsforhold
+Fagsystemet kjenner sjølv avgivere kan bruke `avgiver_hint` som f.eks påvirker sortering/forhåndsvalg etc i brukerdialogen. Dette kan også komme med i `/tokeninfo/avgiverliste` slik at lokal aktørvelger kan identifisere de mest relevante aktørene.
 
-"logg inn på vegne av noen andre", eigen auth-type, for å trigge eige GUI i rar-dialog.
-
-Er dette eigen autorisasjonstype, eller bør det vere eit felt om "type avgivere som eg er interessert i"
-
-Request blir lik som dagens, med følgjande tillegg:
-```
-"authorization_details": [
-  {
-    "type": "ansattporten:representasjon",
-    ""
-  }
-]
-```
-
-Respons i id_token
-
-```
-"sub": "WE0DjFv9ygb2rjS7s_tXsg-fez2Co3Q8oxUmcvQ0mzQ=",
-"iss": "https://oidc.difi.no/idporten-oidc-provider/",
-"pid": "<fnr sluttbruker>",
-...
-"authorization_details": [
-  {
-    "type": "ansattporten:representasjon",
-    "RoleId": 38069107
-    "påvegneav": {
-        "Authority": "norsk_fødselsnummer",
-        "ID": "31129900000"  // fødselsnummer til den som innlogga bruker ønsker å representere (og har rettighet til å representere).
-    }
-  }
-]
-```
-
-### Skattemelding næring:
-
-Framlegget sendt til Skatteetaten.
-Fagsystemet kjenner sjølv avgivere,  bruker seier "yay" eller "nay" til enkelt-element.
-
-```
-[
-  {
-    "type": "skatt:skattemelding_naering",
-    "locations": [
-      "https://altinn.no"
-    ],
-    "actions": [
-      "read",
-      "write"
-    ],
-    "avgiver": "01028012345",
-  },
-  {
-    "type": "skatt:skattemelding_naering",
-    "locations": [
-      "https://altinn.no"
-    ],
-    "actions": [
-      "read"
-    ],
-    "avgiver": "987654321",
-  }
-]
-```
