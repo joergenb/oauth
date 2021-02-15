@@ -1,6 +1,6 @@
 # RAR i ID-porten
 
-## Kva er RAR ?
+# Kva er RAR ?
 
 RAR er ein ny Oauth2-utvidelse for transaksjonsspesifikke autorisasjonar:
 
@@ -40,7 +40,7 @@ GET /authorize?response_type=code
 ```
 Ein skal helst ikkje bruke `scope` og `authorization_details` samstundes.
 
-## Bruk av RAR i ansattporten
+# Bruk av RAR i ansattporten
 
 Me tenkjer at RAR er ein god underliggande protokoll for å løyse fleire av dei behova som er spelt inn til Ansattporten.  
 
@@ -48,7 +48,7 @@ Me ser for oss å definere eit antal autorisasjonstyper for dei ulike brukerreis
 
 Me kan sjå for oss generiske ansattport-dialogar,  og kanskje også tenesteeigar-spesifikke dialoger.
 
-### 1: Generisk ansattpålogging med Altinn
+# 1: Generisk ansattpålogging med Altinn
 
 **Bruksmønster:** Tenesteeigar tilbyr ei nettside, der ein kun ønskjer at pålogging frå personar som har "ei bestemt rolle/representasjon" i Altinn, for ein organisasjon (=avgiver, normalt vil dette vere ein annan org en tenesteeigar sjølv).
 * Definerer ein generisk autorisasjonstype `ansattporten:altinnressurs`
@@ -110,7 +110,7 @@ For å forbedre brukervenligheten, bør det være mulig å sende en rikere fores
 ```
 
 
-#### Flere søke-kriterier
+### Flere søke-kriterier
 
 Dersom det er naturlig at flere roller skal ha adgang til tjenestene, sender klient inn flere autorisasjonsobjekter.
 
@@ -135,31 +135,29 @@ Organisasjonsvelger bør opplyse noe om dette, t.d.
 
 Bruker kan fremdeles bare velge en organisasjon.  Dersom bruker har flere av de forespurte rollene i valgt organisasjon, vil responsen inneholde flere autorisasjonsobjekter.
 
-#### Avgiver-begresning
+### Avgiver-begresning
 
-Kan vere hensiktsmessig å la klient åpne for mulighet til å velge flere representasjonsforhold, men viktig at brukeren har kontroll og får bestemme selv om dette faktisk skal skje. 
+Kan vere hensiktsmessig å la klient åpne for mulighet til å velge flere representasjonsforhold, men viktig at brukeren har kontroll og får bestemme selv om dette faktisk skal skje.
 ```
     "tillat_flervalg": true //
 ```
 
 Se eksempel på mulig avgiver-dialog her: https://app.moqups.com/Lj7L3ahE5T/view/page/ad64222d5
 
-#### Lokalt hurtigbytte av avgiver
+### Lokalt hurtigbytte av avgiver
 
 Formål: gjere det enkelt for proff-brukere å kunne bytte avgiver raskt.  Slike brukere har mange (potensielle) avgivere, og det vil være uhengsiktmessig å redirect hele browseren til Ansattporten hele tiden (spesielt viss klienten er en desktop-applikasjon eller SPA.)
 
-Istedet får brukeren mulighet til å velge  i et lokal GUI kven av dei andre mulege avgiverne ein ønskjer å representere. Virkemåte:
+Istedet får brukeren mulighet til å velge  i et lokal GUI kven av dei andre mulege avgiverne ein ønskjer å representere.
 
-1. Førstegangs pålogging.
+Virkemåte:
+
+#### 1. Førstegangs pålogging.
   * Ansattporten viser liste med potensielle representasjonsforhold (=kandidatliste).  
   * Bruker velger organisasjon på vanlig måte. Klient får token.
   * Ansattporten cacher hele kandidatliste knyttet til SSO-sesjon/autorisasjonen.
-2. Klient kaller dedikert endepunkt med id_token for hente kandidatliste
-3. Bruker velger ny kandidat i klient.
-4. Klient utfører tokenexchange mot AP, dersom target-reportee finst i kandidatlista utsteder AP nytt token (samme autorisasjon, ny autorisajon ?)  kandidatliste oppfriskes mot Altinn dersom eldre enn x sec.  1 versjon:  rein stateless, kaller Altinn kvar gong kandidateendepunkt eller exchange-endepunkt
 
-
-"korps kontra equinor-styreleder"-problmatikken -> bør vere eigen autorisasjontype.  eller brukerstyr swithc "ønsker å representere alle disse"  (kun en,  alle,  noen utvalgte)
+#### 2. Klient kaller dedikert endepunkt med id_token for hente kandidatliste
 
 ```
 GET /tokeninfo/avgiverliste
@@ -191,12 +189,30 @@ gir respons:
 ```
 *TODO! Identifikatorer for personer. Kan vi eksponere en liste med fnr her ..?*
 
-Denne lista kan da presenteres for sluttbruker i portalen, og valg
+#### 3. Bruker velger ny kandidat lokalt
+Avgiverlista presenteres for bruker i lokal GUI. Bruker velger en av kandidatene.
+
+#### 4. Token-exchange
+Brukers valgt blir inkludert som `ny_avgiver`-claim i et tokenexchange-kall ihht. [RFC8693](https://tools.ietf.org/html/rfc8693) mot Ansattporten.  
 
 ```
-POST /tokenexchange?ny_avgiver=0192:987654321
-Authorization: Bearer <token>
+POST /tokenexchange
+Host: ansattporten.no
+
+  grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Atoken-exchange
+  &subject_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aid_token
+  &subject_token=<opprinnelig id_token>
+  &ny_avgiver=<iso6523-resprentasjon av valgt avgiver>
+
 ```
+Dersom ny_avgiver finst i kandidatlista utsteder AP nytt token (samme autorisasjon, ny autorisajon ?)  kandidatliste oppfriskes mot Altinn dersom eldre enn x sec.  1 versjon:  rein stateless, kaller Altinn kvar gong kandidateendepunkt eller exchange-endepunkt
+
+
+"korps kontra equinor-styreleder"-problmatikken -> bør vere eigen autorisasjontype.  eller brukerstyr swithc "ønsker å representere alle disse"  (kun en,  alle,  noen utvalgte)
+
+
+Klienten må bruke samme klient-autentiseringsmetode mot /tokenexchange som mot /token.
+
 
 gir respons
 
@@ -240,6 +256,8 @@ Dersom man ønsker datautveksling med innlogget ansatt, har vi flere valg:
 
 For å utstede access_token vil inneholde samme struktur, men her kreves `locations`-claim i tillegg dersom den generiske "ansattporten"-prefixet skal trustes av APIet (*TODO! Hvorfor kreves locations/aud?*)
 
-### Klient foreslår avgivere (var "Skattemelding næring"):
+#### Klient foreslår avgivere (var "Skattemelding næring"):
 
 Fagsystemet kjenner sjølv avgivere kan bruke `avgiver_hint` som f.eks påvirker sortering/forhåndsvalg etc i brukerdialogen. Dette kan også komme med i `/tokeninfo/avgiverliste` slik at lokal aktørvelger kan identifisere de mest relevante aktørene.
+
+### 3:
