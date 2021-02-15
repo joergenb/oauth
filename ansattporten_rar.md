@@ -110,6 +110,22 @@ For å forbedre brukervenligheten, bør det være mulig å sende en rikere fores
 ```
 
 
+
+### Tilgangsstyring på tjenestenivå
+
+Fremfor å spørre på standardrollene er det i de fleste tilfeller å foretrekke at tjenesteeier oppretter en egen spesialisert autorisasjonsressurs i form av en lenketjeneste i Altinn. Tilgang til denne tjenesten kan (men må ikke) forhåndstildeles til et valgt sett med roller, f.eks. "Daglig leder". All annen tilgang må eksplisitt delegeres.
+
+
+Request omtrent som for rolle:
+```
+"authorization_details": [
+  {
+    "type": "ansattporten:altinnressurs",
+    "ressurs": "urn:altinn:resource:5129:1"
+  }
+]
+```
+
 ### Flere søke-kriterier
 
 Dersom det er naturlig at flere roller skal ha adgang til tjenestene, sender klient inn flere autorisasjonsobjekter.
@@ -138,11 +154,19 @@ Bruker kan fremdeles bare velge en organisasjon.  Dersom bruker har flere av de 
 ### Avgiver-begresning
 
 Kan vere hensiktsmessig å la klient åpne for mulighet til å velge flere representasjonsforhold, men viktig at brukeren har kontroll og får bestemme selv om dette faktisk skal skje.
+
+
+
 ```
-    "tillat_flervalg": true //
+    "tillat_flervalg": true     // kan velge flere avgivere i dialog
+    "be_om_hurtigbytte": true  // be sluttbruker om å gi klienten lov til å bytte organisasjon (kan potensielt skje uten brukermedvirkning)
 ```
 
 Se eksempel på mulig avgiver-dialog her: https://app.moqups.com/Lj7L3ahE5T/view/page/ad64222d5
+
+TODO: her er en motsetning mellom bruksmønsteret for proff-brukere (regnskapsmedarbeidere) som kan representere opp til 100 organisasjoner på en dag, kontra privat-bruker (eksempelet med person som har signeringsrett BÅDE for stort foretak i jobbsammenheng OG for skolekorpset til eget barn,  og som selvsagt ikke ønsker at disse skal kunne blandes/misbrukes).  Det er kanskje mest realistisk å måtte innføre egne autorisasjonstype av type `ansattporten:proff` og ha egen avgiver-velger for dettte, enn å forsøke å konstruere EN dialog som skal håndtere begge typer?
+
+
 
 ### Lokalt hurtigbytte av avgiver
 
@@ -193,7 +217,7 @@ gir respons:
 Avgiverlista presenteres for bruker i lokal GUI. Bruker velger en av kandidatene.
 
 #### 4. Token-exchange
-Brukers valgt blir inkludert som `ny_avgiver`-claim i et tokenexchange-kall ihht. [RFC8693](https://tools.ietf.org/html/rfc8693) mot Ansattporten.  
+Brukers valgt blir inkludert som `ny_avgiver`-attributt i et tokenexchange-kall ihht. [RFC8693](https://tools.ietf.org/html/rfc8693) mot Ansattporten.  
 
 ```
 POST /tokenexchange
@@ -202,39 +226,32 @@ Host: ansattporten.no
   grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Atoken-exchange
   &subject_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aid_token
   &subject_token=<opprinnelig id_token>
+  &requested_token_type=urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aid_token  // eller access_token
   &ny_avgiver=<iso6523-resprentasjon av valgt avgiver>
 
 ```
-Dersom ny_avgiver finst i kandidatlista utsteder AP nytt token (samme autorisasjon, ny autorisajon ?)  kandidatliste oppfriskes mot Altinn dersom eldre enn x sec.  1 versjon:  rein stateless, kaller Altinn kvar gong kandidateendepunkt eller exchange-endepunkt
+Dersom ny_avgiver finst i kandidatlista, og autorisasjonen tilknyttet `subject_token` fremdeles er aktiv, så utsteder AP nytt token i responsen:
+```
+HTTP 200 OK
+Content-Type: application/json
 
-
-"korps kontra equinor-styreleder"-problmatikken -> bør vere eigen autorisasjontype.  eller brukerstyr swithc "ønsker å representere alle disse"  (kun en,  alle,  noen utvalgte)
-
+{
+    "access_token": eyJ..  <nytt_token, av forespurt type>,
+    "issued_token_type": urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aid_token,  // eller access_token
+    "token_type": "N_A",    // "Bearer" dersom issued_token_type=access_token
+    "expires_in: 120        // Levetid, dersom issued_token_type=access_token
+}
+```
 
 Klienten må bruke samme klient-autentiseringsmetode mot /tokenexchange som mot /token.
 
+Kandidatliste caches i Ansattporten i X minutter, oppfriskes mot Altinn dersom eldre.
 
-gir respons
-
-```
-eyJhbGciOiJSUzI1NiIsImtpZCI6I... <nytt id_token>
-```
+Hurtigbytte må ikkje kunne misbrukast til å gje klienten tilgang på vegne av ein avgiver som sluttbrukar ikkje ønskjer (det er teknisk sett mogeleg for klient å gjere tokenexchange-kallet utan å faktisk vise lokal GUI til sluttbruker). Dette betyr (truleg) at klienten må aktivt forespørre støtte for hurtigbytte, og då må dette visast og aktiverast av sluttbruker i tilgangsdialog.
 
 
-### Tilgangsstyring på tjenestenivå
-
-Fremfor å spørre på standardrollene er det i de fleste tilfeller å foretrekke at tjenesten oppretter en egen spesialisert autorisasjonsressurs i form av en lenketjeneste i Altinn. Tilgang til denne tjenesten kan (men må ikke) forhåndstildeles til et valgt sett med roller, f.eks. "Daglig leder". All annen tilgang må eksplisitt delegeres.
 
 
-Request omtrent som for rolle:
-```
-"authorization_details": [
-  {
-    "type": "ansattporten:altinnressurs",
-    "ressurs": "urn:altinn:resource:5129:1"
-  }
-]
-```
 
 ### 2: Generisk datautvekling
 
