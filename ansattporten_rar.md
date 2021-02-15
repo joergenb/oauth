@@ -2,28 +2,60 @@
 
 ## Kva er RAR ?
 
-Erstatter (helst) `scope` med ein transaksjonspesifikk/fingranulert "samtykke" til ein `authorization_details` som er ein array av **autorisasjonsobjekter** som kvart består av:
+RAR er ein ny Oauth2-utvidelse for transaksjonsspesifikke autorisasjonar:
+
+* Publiserte draft:  https://tools.ietf.org/html/draft-ietf-oauth-rar-03
+* Arbeidsdokument : https://github.com/oauthstuff/draft-oauth-rar/blob/master/main.md
+
+Der "basic" Oauth2 kun gir tilgang til eit såkalt "scope" (tekst-streng), opnar RAR for tilgang til meir utvida datamodeller i form av **autorisasjonstyper**.
+
+Dette blir utlevert i token som eit nytt fleir-nivå claim kalla `authorization_details` som igjen er ein array av autorisasjonsobjekter, der kvart objekt består av:
 - standardiserte felt:
-  - type (påkrevd felt)
+  - type (påkrevd felt, definerer den aktuelle autorisasjonstypen)
   - action
-  - locations (samme som aud, stort sett)
-  - identifier  (peikar på ressursen hjå RS)
-  - datatypes (peiker på kva datatyper klient ønsker å ha frå RS)
+  - locations (tiltenkt mottakar =audience for tokenet)
+  - identifier  (kan peike på ein konkret ressurs hjå RS)
+  - datatypes (ein array med datatyper klient ønsker å få frå RS)
 - eigendefinerte felt,
-  - ein `type` vil normal ha definert ein tilhøyrande gyldig datamodell
+  - til ein gitt `type` vil det normalt vere definert og dokumentert ein tilhøyrande gyldig datamodell
 
 
-MERK: AS skal avvise dersom eit av autorisasjonsobjekta har syntaks-feil eller element som er ukjende.
+MERK: Autorisasjonsserver skal avvise dersom klient førespur autorisasjonsobjekt med syntaks-feil eller ukjende element.
 
-MERK 2: AS kan endre authorisasjonsobjekta i responsen, basert på brukaren sine handlingar i samtykke-dialogen.
+MERK 2: Autorisasjonsserver kan endre autorisasjonsobjekta i responsen, basert på brukaren sine handlingar i samtykke-dialogen.
 
+**Døme på request:**
+```
+GET /authorize?response_type=code
+      &client_id=s6BhdRkqt3
+      &state=af0ifjsldkj
+      &redirect_uri=https%3A%2F%2Fclient.example.org%2Fcb
+      &code_challenge_method=S256
+      &code_challenge=K2-ltc83acc4h0c9w6ESC_rEMTJ3bwc-uCHaoeK1t8U
+      &authorization_details=%5B%7B%22type%22%3A%22account%5Finformati
+      on%22%2C%22actions%22%3A%5B%22list%5Faccounts%22%2C%22read%5Fbal
+      ances%22%2C%22read%5Ftransactions%22%5D%2C%22locations%22%3A%5B%
+      22https%3A%2F%2Fexample%2Ecom%2Faccounts%22%5D%7D%5D HTTP/1.1
+   Host: server.example.com
+```
+Ein skal helst ikkje bruke `scope` og `authorization_details` samstundes.
 
-## Mogelege typer:
+## Bruk av RAR i ansattporten
 
-### Basic ansattporten
-vil kun ha pålogging av "nokon med ei viss rolle/representasjon". Klient kjenner ikkje org. frå før:
+Me tenkjer at RAR er ein god underliggande protokoll for å løyse fleire av dei behova som er spelt inn til Ansattporten.  
 
-Request blir lik som dagens, med følgjande tillegg:
+Me ser for oss å definere eit antal autorisasjonstyper for dei ulike brukerreisene som er identifisert i prosjektet.  Dersom ein slik type er tilstades i autentiseringsforespørselen, så trigger dette ansattport-funksjonalitet.  Kvar autorisasjonstype vil føre til at det blir vist ein nærare definert "avgiver-velger" etter at innlogga brukar har autentisert seg.  
+
+Me kan sjå for oss generiske ansattport-dialogar,  og kanskje også tenesteeigar-spesifikke dialoger.
+
+### 1: Generisk ansattpålogging med Altinn
+
+**Bruksmønster:** Tenesteeigar tilbyr ei nettside, der ein kun ønskjer at pålogging frå personar som har "ei bestemt rolle/representasjon" i Altinn, for ein organisasjon (=avgiver, normalt vil dette vere ein annan org en tenesteeigar sjølv).
+* Definerer ein generisk autorisasjonstype `ansattporten:altinnressurs`
+* Definerer ein URN-syntaks som identifiserer den etterspurte ressrurs/"rolla", alt etter om desse er Altinn2.0 eller 3.0
+
+Ein minimums-førespurnad blir då slik:
+
 ```
 "authorization_details": [
   {
@@ -33,33 +65,18 @@ Request blir lik som dagens, med følgjande tillegg:
 ]
 ```
 
-
-Full datamodell
-```
-"authorization_details": [
-  {
-    "type": "ansattporten:altinnressurs",
-    "ressurs": "urn:altinn:[resource eller role]:[identifikator]",
-    "mulige_avgivertyper": [ "foretak", "bedrift", "person"] // default: foretak
-    "avgiver_hint": { [ avgiver i iso6523] } // trengs det noko hint på brukerstyrt begrensning
-  }
-]
-```
-
-Bør kun vere Altinn-3.0-kompatible ressurser.
+der `ressurs` må følgje desse reglane:
 
 |Ressurs-identifikator| Beskrivelse|Eksempel|
 |-|-|-|
-|urn:altinn:role:{rolletypekode} | Kan velge fra whitelist av [Altinn-rollene](https://www.altinn.no/api/metadata/roledefinitions?language=1044). | altinn:role:siskd
+|urn:altinn:role:{rolletypekode} | Kan velge fra allowlist av [Altinn-rollene](https://www.altinn.no/api/metadata/roledefinitions?language=1044). | altinn:role:siskd
 |urn:altinn:resource:{tjenestekode}:{tjenesteutgave} | Altinn 2 [tenestekode/utgåve](https://www.altinn.no/api/metadata?language=1044) | altinn:resource:3906:141205
 |urn:altinn:resource:{org}:{appname} | Altinn 3 [org/app](https://www.altinn.no/api/metadata?language=1044) | altinn:resource:skd:sirius
 
-For Enhetsregisteret er det typisk nokon med nøkkelroller / prokura/ (signeringsrett) som kan vere aktuelt å ha
 
-> **Mange av dagens standard Altinn-roller gir veldig breie tilganger ("Post/arkiv", "Utfyller/innsender").  Dette er problematisert med at de ikkje følger gode dataminimeringsprinsipp, og vanskeliggjør det å skulle holde oversikt over hva en gitt rolle faktisk gir tilgang til.  Derfor bør ein kanskje ikkje tilby rolle som muligheit i det heile, men heller kreve at det defineres tjenester som det spørres på. Ein mellomting er å berre godkjenna førespurnader på eit sterkt avgrensa sett med Altinn-roller.**
+> **Mange av dagens standard Altinn-roller gir veldig breie tilganger ("Post/arkiv", "Utfyller/innsender").**  Dette er problematisert med at de ikkje følger gode dataminimeringsprinsipp, og vanskeliggjør det å skulle holde oversikt over hva en gitt rolle faktisk gir tilgang til.  Derfor bør ein kanskje ikkje tilby rolle som muligheit i det heile, men heller kreve at det defineres tjenester som det spørres på. Ein mellomting er å berre godkjenna førespurnader på eit sterkt avgrensa sett med Altinn-roller.
 
-Bruker velger så en - og bare en - organisasjon i organisasjonsvelger.
-Respons i id_token
+Ansattporten vil så vise en organisasjonsvelger, som lister opp alle de organisasjoner der innlogget bruker har tilgang til den aktuelle ressursen i Altinn.  Bruker kan så velge en - og bare en - organisasjon.   Det resulterende id_token vil se slik ut:
 
 ```
 "sub": "WE0DjFv9ygb2rjS7s_tXsg-fez2Co3Q8oxUmcvQ0mzQ=",
@@ -71,15 +88,29 @@ Respons i id_token
     "type": "ansattporten:altinnressurs",
     "ressurs": "urn:altinn:role:siskd"
     "ressurs_name": "Begrenset signeringsrett",
-    "avgiver": {
+    "avgiver": [{
         "Authority": "iso6523-actorid-upis",
         "ID": "0192:999888777"  // org.no til arbeidsgiveren som den innlogga brukeren har valgt i org.velger
-    }
+    }]
   }
 ]
 ```
 
-### Flere søke-kriterier
+For å forbedre brukervenligheten, bør det være mulig å sende en rikere forespørsel som støtter forhåndsvalgt avgiver (dersom klient vet dette fra før) eller begrense avgiver-typer, slik at ikke bruker velger en person som avgiver når tjenesten bare gir mening for foretaks-representasjon for den gitte ressursen. Videre bør det (kanskje?) åpnes for at bruker kan kunne velge flere avgivere i samme autorisajon. Den fulle datamodellen for "generisk ansattpålogging"-forespørsel blir da:
+```
+"authorization_details": [
+  {
+    "type": "ansattporten:altinnressurs",
+    "ressurs": "urn:altinn:[resource eller role]:[identifikator]",
+    "mulige_avgivertyper": [ "foretak", "bedrift", "person"] // default: foretak
+    "avgiver_hint": { [ avgiver i iso6523] }
+    "tillat_flervalg": false //
+  }
+]
+```
+
+
+#### Flere søke-kriterier
 
 Dersom det er naturlig at flere roller skal ha adgang til tjenestene, sender klient inn flere autorisasjonsobjekter.
 
@@ -104,13 +135,26 @@ Organisasjonsvelger bør opplyse noe om dette, t.d.
 
 Bruker kan fremdeles bare velge en organisasjon.  Dersom bruker har flere av de forespurte rollene i valgt organisasjon, vil responsen inneholde flere autorisasjonsobjekter.
 
-### Lokal hurtigbytte av avgiver
+#### Avgiver-begresning
 
-Formål: gjere det enkelt for proff-bukrere å kunne bytte avgiver raskt.
-bruker kan velge i lokal GUI kven av dei andre mulege avgiverne ein ønskjer å representere
+Kan vere hensiktsmessig å la klient åpne for mulighet til å velge flere representasjonsforhold, men viktig at brukeren har kontroll og får bestemme selv om dette faktisk skal skje. 
+```
+    "tillat_flervalg": true //
+```
 
-1. Bruker velger org.  AP lagrer kandidatliste på autorisasjonen. Klient får token.
-2. Klient kaller dedikert endepunkt med token for hente kandidatliste
+Se eksempel på mulig avgiver-dialog her: https://app.moqups.com/Lj7L3ahE5T/view/page/ad64222d5
+
+#### Lokalt hurtigbytte av avgiver
+
+Formål: gjere det enkelt for proff-brukere å kunne bytte avgiver raskt.  Slike brukere har mange (potensielle) avgivere, og det vil være uhengsiktmessig å redirect hele browseren til Ansattporten hele tiden (spesielt viss klienten er en desktop-applikasjon eller SPA.)
+
+Istedet får brukeren mulighet til å velge  i et lokal GUI kven av dei andre mulege avgiverne ein ønskjer å representere. Virkemåte:
+
+1. Førstegangs pålogging.
+  * Ansattporten viser liste med potensielle representasjonsforhold (=kandidatliste).  
+  * Bruker velger organisasjon på vanlig måte. Klient får token.
+  * Ansattporten cacher hele kandidatliste knyttet til SSO-sesjon/autorisasjonen.
+2. Klient kaller dedikert endepunkt med id_token for hente kandidatliste
 3. Bruker velger ny kandidat i klient.
 4. Klient utfører tokenexchange mot AP, dersom target-reportee finst i kandidatlista utsteder AP nytt token (samme autorisasjon, ny autorisajon ?)  kandidatliste oppfriskes mot Altinn dersom eldre enn x sec.  1 versjon:  rein stateless, kaller Altinn kvar gong kandidateendepunkt eller exchange-endepunkt
 
@@ -118,7 +162,7 @@ bruker kan velge i lokal GUI kven av dei andre mulege avgiverne ein ønskjer å 
 "korps kontra equinor-styreleder"-problmatikken -> bør vere eigen autorisasjontype.  eller brukerstyr swithc "ønsker å representere alle disse"  (kun en,  alle,  noen utvalgte)
 
 ```
-GET /tokeninfo/avgiverliste 
+GET /tokeninfo/avgiverliste
 Authorization: Bearer <token>
 ```
 
@@ -140,7 +184,7 @@ gir respons:
       "ID": "11028034569"
   },
   {
-      "Authority": "norwegian-population-register", 
+      "Authority": "norwegian-population-register",
       "ID": "411028034569" // D-nummer ..?
   }
 ]
@@ -176,7 +220,7 @@ Request omtrent som for rolle:
 ]
 ```
 
-### Basic datautvekling
+### 2: Generisk datautvekling
 
 Dersom man ønsker datautveksling med innlogget ansatt, har vi flere valg:
 
@@ -187,16 +231,15 @@ Dersom man ønsker datautveksling med innlogget ansatt, har vi flere valg:
 2. API-tilbyder ønsker å tilgangstyre hvilke klienter/konsumenter som skal kunne bruke APIet
   - må lage eget autorisasjonsobjekt, må lage enkel datastruktur som Ansattporten kan validere mot
   - tilgangstyring på samme måten som scopes idag
-  
+
 3. API-tilbyder ønsker å tilgangstyre hvilke bruker-valgte organisasjoner som skal bruke APIet
-  - kan bruke [tjenesteeierstyrt rettighetsregister (SRR)](https://altinn.github.io/docs/api/tjenesteeiere/funksjonelle-scenario/#tjenesteeierstyrt-rettighetsregister) i Altinn 
-    - Personer vil kun få organisasjoner/personer i sin avgiverliste som er eksplisitt gitt tilgang til tjenesten i SRR 
+  - kan bruke [tjenesteeierstyrt rettighetsregister (SRR)](https://altinn.github.io/docs/api/tjenesteeiere/funksjonelle-scenario/#tjenesteeierstyrt-rettighetsregister) i Altinn
+    - Personer vil kun få organisasjoner/personer i sin avgiverliste som er eksplisitt gitt tilgang til tjenesten i SRR
     - Ikke mulig for tilgangstyrer i virksomhet A å delegere tilgang til en SRR-styrt tjeneste hvis ikke A er gitt tilgang av i SRR av tjenesteeier
     - Eksisterende delegeringer slettes hvis tjenesteeier fjerner tilgang gitt i SRR  
-  
+
 For å utstede access_token vil inneholde samme struktur, men her kreves `locations`-claim i tillegg dersom den generiske "ansattporten"-prefixet skal trustes av APIet (*TODO! Hvorfor kreves locations/aud?*)
 
 ### Klient foreslår avgivere (var "Skattemelding næring"):
 
 Fagsystemet kjenner sjølv avgivere kan bruke `avgiver_hint` som f.eks påvirker sortering/forhåndsvalg etc i brukerdialogen. Dette kan også komme med i `/tokeninfo/avgiverliste` slik at lokal aktørvelger kan identifisere de mest relevante aktørene.
-
