@@ -1,8 +1,8 @@
-# RAR i ID-porten
+# Ansattporten og bruk av RAR
 
 # Kva er RAR ?
 
-RAR er ein ny Oauth2-utvidelse for transaksjonsspesifikke autorisasjonar:
+Rich Authorization Requests (RAR) er ein ny Oauth2-utvidelse for transaksjonsspesifikke autorisasjonar:
 
 * Publiserte draft:  https://tools.ietf.org/html/draft-ietf-oauth-rar-03
 * Arbeidsdokument : https://github.com/oauthstuff/draft-oauth-rar/blob/master/main.md
@@ -44,11 +44,16 @@ Ein skal helst ikkje bruke `scope` og `authorization_details` samstundes.
 
 Me tenkjer at RAR er ein god underliggande protokoll for å løyse fleire av dei behova som er spelt inn til Ansattporten.  
 
-Me ser for oss å definere eit antal autorisasjonstyper for dei ulike brukerreisene som er identifisert i prosjektet.  Dersom ein slik type er tilstades i autentiseringsforespørselen, så trigger dette ansattport-funksjonalitet.  Kvar autorisasjonstype vil føre til at det blir vist ein nærare definert "avgiver-velger" etter at innlogga brukar har autentisert seg.  
+Me ser for oss å definere eit antal autorisasjonstyper for dei ulike brukerreisene som er identifisert i prosjektet.  Dersom ein slik type er tilstades i autentiseringsforespørselen, så trigger dette ansattport-funksjonalitet.  Kvar autorisasjonstype vil føre til at det blir vist ein nærare definert "avgiver-velger" etter at innlogga brukar har autentisert seg, dvs:
+
+1. Bruker klikker login-knapp hos tjeneste.  Kallet til ansattporten inneholder informasjon om hvilket representasjonsforhold som tjenesten trenger
+2. Bruker autentiserer seg med sterk eID.  Det opprettes ikke SSO-sesjon i Ansattporten.
+3. Bruker vises en "avgiver-velger"-dialog, der hen kan velge hvilken avgiver (organisasjon, person) som denne innloggingen skal være på vegne av
+4. Bruker blir sendt tilbake til tjenesten, med informasjon om valgt avgiver
 
 Me kan sjå for oss generiske ansattport-dialogar,  og kanskje også tenesteeigar-spesifikke dialoger.
 
-# 1: Generisk ansattpålogging med Altinn
+# Brukerreise 1: Generisk ansattpålogging med Altinn
 
 **Bruksmønster:** Tenesteeigar tilbyr ei nettside, der ein kun ønskjer at pålogging frå personar som har "ei bestemt rolle/representasjon" i Altinn, for ein organisasjon (=avgiver, normalt vil dette vere ein annan org en tenesteeigar sjølv).
 * Definerer ein generisk autorisasjonstype `ansattporten:altinnressurs`
@@ -80,7 +85,7 @@ Ansattporten vil så vise en organisasjonsvelger, som lister opp alle de organis
 
 ```
 "sub": "WE0DjFv9ygb2rjS7s_tXsg-fez2Co3Q8oxUmcvQ0mzQ=",
-"iss": "https://oidc.difi.no/idporten-oidc-provider/",
+"iss": "https://ansattporten.no/",
 "pid": "<fnr sluttbruker>",
 ...
 "authorization_details": [
@@ -128,7 +133,7 @@ Request omtrent som for rolle:
 
 ### Flere søke-kriterier
 
-Dersom det er naturlig at flere roller skal ha adgang til tjenestene, sender klient inn flere autorisasjonsobjekter.
+Dersom det er naturlig at flere roller skal ha adgang til tjenesten, sender klient inn flere autorisasjonsobjekter.
 
 ```
 "authorization_details": [
@@ -170,7 +175,7 @@ TODO: her er en motsetning mellom bruksmønsteret for proff-brukere (regnskapsme
 
 ### Lokalt hurtigbytte av avgiver
 
-Formål: gjere det enkelt for proff-brukere å kunne bytte avgiver raskt.  Slike brukere har mange (potensielle) avgivere, og det vil være uhengsiktmessig å redirect hele browseren til Ansattporten hele tiden (spesielt viss klienten er en desktop-applikasjon eller SPA.)
+Formål: gjere det enkelt for proff-brukere å kunne bytte avgiver raskt.  Slike brukere har mange (potensielt flere hundre) avgivere, og det vil være uhengsiktmessig å redirecte hele browseren til Ansattporten hele tiden (spesielt viss klienten er en desktop-applikasjon eller SPA.)
 
 Istedet får brukeren mulighet til å velge  i et lokal GUI kven av dei andre mulege avgiverne ein ønskjer å representere.
 
@@ -181,11 +186,11 @@ Virkemåte:
   * Bruker velger organisasjon på vanlig måte. Klient får token.
   * Ansattporten cacher hele kandidatliste knyttet til SSO-sesjon/autorisasjonen.
 
-#### 2. Klient kaller dedikert endepunkt med id_token for hente kandidatliste
+#### 2. Klient kaller dedikert endepunkt for hente kandidatliste
 
 ```
 GET /tokeninfo/avgiverliste
-Authorization: Bearer <token>
+Authorization: Bearer <aktivt access_token tilhørende bruker>
 ```
 
 gir respons:
@@ -211,7 +216,7 @@ gir respons:
   }
 ]
 ```
-*TODO! Identifikatorer for personer. Kan vi eksponere en liste med fnr her ..?*
+*TODO! Identifikatorer for personer. Kan vi eksponere en liste med fnr her sånn GDPR-messig ..?*
 
 #### 3. Bruker velger ny kandidat lokalt
 Avgiverlista presenteres for bruker i lokal GUI. Bruker velger en av kandidatene.
@@ -253,9 +258,9 @@ Hurtigbytte må ikkje kunne misbrukast til å gje klienten tilgang på vegne av 
 
 
 
-### 2: Generisk datautvekling
+# Brukerreise 2: Generisk datautvekling
 
-Dersom man ønsker datautveksling med innlogget ansatt, har vi flere valg:
+Dersom man ønsker datautveksling mellom virksomheter, der en API-tilbyder krever at det skal være en innlogget ansatt med eit visst representasjonsforhold hos konsumenten,  har vi flere valg:
 
 1. API-tilbyder kan stole på det generiske "ansattporten:altinnressurs"-objektet
   - må validere på "ressurs"
@@ -263,7 +268,8 @@ Dersom man ønsker datautveksling med innlogget ansatt, har vi flere valg:
 
 2. API-tilbyder ønsker å tilgangstyre hvilke klienter/konsumenter som skal kunne bruke APIet
   - må lage eget autorisasjonsobjekt, må lage enkel datastruktur som Ansattporten kan validere mot
-  - tilgangstyring på samme måten som scopes idag
+  - TODO hvordan lage spesialiserte GUI
+  - tilgangstyring på samme måten som scopes idag (via Samarbeidsportalen)
 
 3. API-tilbyder ønsker å tilgangstyre hvilke bruker-valgte organisasjoner som skal bruke APIet
   - kan bruke [tjenesteeierstyrt rettighetsregister (SRR)](https://altinn.github.io/docs/api/tjenesteeiere/funksjonelle-scenario/#tjenesteeierstyrt-rettighetsregister) i Altinn
@@ -273,8 +279,19 @@ Dersom man ønsker datautveksling med innlogget ansatt, har vi flere valg:
 
 For å utstede access_token vil inneholde samme struktur, men her kreves `locations`-claim i tillegg dersom den generiske "ansattporten"-prefixet skal trustes av APIet (*TODO! Hvorfor kreves locations/aud?*)
 
-#### Klient foreslår avgivere (var "Skattemelding næring"):
 
-Fagsystemet kjenner sjølv avgivere kan bruke `avgiver_hint` som f.eks påvirker sortering/forhåndsvalg etc i brukerdialogen. Dette kan også komme med i `/tokeninfo/avgiverliste` slik at lokal aktørvelger kan identifisere de mest relevante aktørene.
+# Brukerreise 3: Informasjon fra AA-registeret
 
-### 3:
+TBD
+
+- videredistribusjon ?
+- SAMTYKKE TIL Å UTLEVERE YRKESKODE FRA
+- reelt samtykke, (du må kunne seie nei)
+
+Teknisk handterer me vel AA-registeret via Altinn Autorisasjon, so det vert "berre" eigne ressurs-urn'er ?
+
+# Brukerreise 4: Punkt-innlogging uten SSO
+
+I noen sektorer / arbeidssituasjoner vil det være av stor verdi bare det at Ansattporten kan tilby en "rein" punkt-autentisering som ikke fører til en SSO-sesjon.
+
+Dette løses enkelt på protokoll-nivå ved at det tillates at klienter sender autentiseringsforespørsler uten `authorization_details` eller oauth2-scopes utover `openid`, at det da ikke vises noen organisasjonsvelger,  og at det da utleveres et "ID-porten-lignende"-id_token uten noen organisasjonsinformasjon, og da "https://ansattporten.no" som issuer.
