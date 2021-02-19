@@ -44,24 +44,33 @@ Ein skal helst ikkje bruke `scope` og `authorization_details` samstundes.
 
 Me tenkjer at RAR er ein god underliggande protokoll for å løyse fleire av dei behova som er spelt inn til Ansattporten.  
 
-Me ser for oss å definere eit antal autorisasjonstyper for dei ulike brukerreisene som er identifisert i prosjektet.  Dersom ein slik type er tilstades i autentiseringsforespørselen, så trigger dette ansattport-funksjonalitet.  Kvar autorisasjonstype vil føre til at det blir vist ein nærare definert "avgiver-velger" etter at innlogga brukar har autentisert seg, dvs:
-
-1. Bruker klikker login-knapp hos tjeneste.  Kallet til ansattporten inneholder informasjon om hvilket representasjonsforhold som tjenesten trenger
-2. Bruker autentiserer seg med sterk eID.  Det opprettes ikke SSO-sesjon i Ansattporten.
-3. Bruker vises en "avgiver-velger"-dialog, der hen kan velge hvilken avgiver (organisasjon, person) som denne innloggingen skal være på vegne av
-4. Bruker blir sendt tilbake til tjenesten, med informasjon om valgt avgiver
+Me ser for oss å definere eit antal autorisasjonstyper for dei ulike brukerreisene som er identifisert i prosjektet.  Dersom ein slik type er tilstades i autentiseringsforespørselen, så trigger dette ansattport-funksjonalitet.  Kvar autorisasjonstype vil føre til at det blir vist ein nærare definert "avgiver-velger" etter at innlogga brukar har autentisert seg.
 
 Me kan sjå for oss generiske ansattport-dialogar,  og kanskje også tenesteeigar-spesifikke dialoger.
 
 # Brukerreise 1: Generisk ansattpålogging med Altinn
 
 **Bruksmønster:** Tenesteeigar tilbyr ei nettside, der ein kun ønskjer at pålogging frå personar som har "ei bestemt rolle/representasjon" i Altinn, for ein organisasjon (=avgiver, normalt vil dette vere ein annan org en tenesteeigar sjølv).
+
+Brukerreise:
+
+1. Bruker klikker login-knapp hos tjeneste.  Kallet til ansattporten inneholder informasjon om hvilket representasjonsforhold som tjenesten trenger
+2. Bruker autentiserer seg med sterk eID.  Det opprettes ikke SSO-sesjon i Ansattporten.
+3. Bruker vises en "avgiver-velger"-dialog, der hen kan velge hvilken avgiver (organisasjon, person) som denne innloggingen skal være på vegne av
+4. Bruker blir sendt tilbake til tjenesten, med informasjon om valgt avgiver
+
+Protokollmessig implementasjon:
+
 * Definerer ein generisk autorisasjonstype `ansattporten:altinnressurs`
 * Definerer ein URN-syntaks som identifiserer den etterspurte ressrurs/"rolla", alt etter om desse er Altinn2.0 eller 3.0
 
 Ein minimums-førespurnad blir då slik:
 
 ```
+GET /authorize
+
+...vanlige oauth-paramtre (redirect_uri, client_di)...
+
 "authorization_details": [
   {
     "type": "ansattporten:altinnressurs",
