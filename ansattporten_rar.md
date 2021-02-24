@@ -88,6 +88,8 @@ der `ressurs` må følgje desse reglane:
 |urn:altinn:resource:{org}:{appname} | Altinn 3 [org/app](https://www.altinn.no/api/metadata?language=1044) | altinn:resource:skd:sirius
 
 
+TODO:  håndtere ulike rettigheter (les, skriv, fyll ut) på tjenester?
+
 > **Mange av dagens standard Altinn-roller gir veldig breie tilganger ("Post/arkiv", "Utfyller/innsender").**  Dette er problematisert med at de ikkje følger gode dataminimeringsprinsipp, og vanskeliggjør det å skulle holde oversikt over hva en gitt rolle faktisk gir tilgang til.  Derfor bør ein kanskje ikkje tilby rolle som muligheit i det heile, men heller kreve at det defineres tjenester som det spørres på. Ein mellomting er å berre godkjenna førespurnader på eit sterkt avgrensa sett med Altinn-roller.
 
 Ansattporten vil så vise en organisasjonsvelger, som lister opp alle de organisasjoner der innlogget bruker har tilgang til den aktuelle ressursen i Altinn.  Bruker kan så velge en - og bare en - organisasjon.   Det resulterende id_token vil se slik ut:
