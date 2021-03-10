@@ -38,7 +38,14 @@ GET /authorize?response_type=code
       22https%3A%2F%2Fexample%2Ecom%2Faccounts%22%5D%7D%5D HTTP/1.1
    Host: server.example.com
 ```
+
+### Forhold mellom scope og authorization_details
+
 Ein skal helst ikkje bruke `scope` og `authorization_details` samstundes.
+
+Dersom ein gjer det, må tildelt autorisasjon tolkast innskrenkande langs begge dimensjonar, slik at ikkje ein klient får rettar som brukaren ikkje meinte å gje den.
+
+Dette vil i stor grad vere avhengig av god validering på API-sida.
 
 # Bruk av RAR i ansattporten
 
@@ -50,7 +57,7 @@ Me kan sjå for oss generiske ansattport-dialogar,  og kanskje også tenesteeiga
 
 # Brukerreise 1: Generisk ansattpålogging med Altinn
 
-**Bruksmønster:** Tenesteeigar tilbyr ei nettside, der ein kun ønskjer at pålogging frå personar som har "ei bestemt rolle/representasjon" i Altinn, for ein organisasjon (=avgiver, normalt vil dette vere ein annan org en tenesteeigar sjølv).
+**Bruksmønster:** Tenesteeigar tilbyr ei nettside, der ein kun ønskjer at pålogging frå personar som har "ei bestemt rolle/representasjon" i Altinn, for ein organisasjon (=avgiver, normalt vil dette vere ein annan org enni tenesteeigar sjølv).
 
 Brukerreise:
 
@@ -69,7 +76,7 @@ Ein minimums-førespurnad blir då slik:
 ```
 GET /authorize
 
-...vanlige oauth-paramtre (redirect_uri, client_di)...
+...vanlige oauth-paramtre (redirect_uri, client_id)...
 
 "authorization_details": [
   {
@@ -87,8 +94,6 @@ der `ressurs` må følgje desse reglane:
 |urn:altinn:resource:{tjenestekode}:{tjenesteutgave} | Altinn 2 [tenestekode/utgåve](https://www.altinn.no/api/metadata?language=1044) | altinn:resource:3906:141205
 |urn:altinn:resource:{org}:{appname} | Altinn 3 [org/app](https://www.altinn.no/api/metadata?language=1044) | altinn:resource:skd:sirius
 
-
-TODO:  håndtere ulike rettigheter (les, skriv, fyll ut) på tjenester?
 
 > **Mange av dagens standard Altinn-roller gir veldig breie tilganger ("Post/arkiv", "Utfyller/innsender").**  Dette er problematisert med at de ikkje følger gode dataminimeringsprinsipp, og vanskeliggjør det å skulle holde oversikt over hva en gitt rolle faktisk gir tilgang til.  Derfor bør ein kanskje ikkje tilby rolle som muligheit i det heile, men heller kreve at det defineres tjenester som det spørres på. Ein mellomting er å berre godkjenna førespurnader på eit sterkt avgrensa sett med Altinn-roller.
 
@@ -111,6 +116,9 @@ Ansattporten vil så vise en organisasjonsvelger, som lister opp alle de organis
   }
 ]
 ```
+
+Merk at som default er ikke rettighet/operasjon-dimensjonen (les, skriv, ...) eksplisitt signallert, slik at de tjenester som trenger skille mellom ulike rettigheter, må be om dette eksplisitt. Se avsnitt nedenfor for hvordan dette blir løst.
+
 
 For å forbedre brukervenligheten, bør det være mulig å sende en rikere forespørsel som støtter forhåndsvalgt avgiver (dersom klient vet dette fra før) eller begrense avgiver-typer, slik at ikke bruker velger en person som avgiver når tjenesten bare gir mening for foretaks-representasjon for den gitte ressursen. Videre bør det (kanskje?) åpnes for at bruker kan kunne velge flere avgivere i samme autorisajon. Den fulle datamodellen for "generisk ansattpålogging"-forespørsel blir da:
 ```
@@ -164,12 +172,47 @@ Organisasjonsvelger bør opplyse noe om dette, t.d.
 > * Ansvarlig revisor
 > * Regnskapsfører med signeringsrett
 
+I normaltilfellet bør bruker kun få lov til å bare velge en organisasjon.  Dersom bruker har flere av de forespurte rollene i valgt organisasjon, vil responsen inneholde flere autorisasjonsobjekter.
 
-Bruker kan fremdeles bare velge en organisasjon.  Dersom bruker har flere av de forespurte rollene i valgt organisasjon, vil responsen inneholde flere autorisasjonsobjekter.
+TODO: Avklare organisasjons-flervalg kombinert med multiple forespurte ressurser:  Det er andre brukstilfeller der man ønsker å representere mange avgivere (proffbrukere), såkalt "flervalg".  Dersom flervalg kombineres med multiple ressurser, blir det en utfordring å lage et forståelig design i avgiver-dialogen.   Ansattporten må passe på at det ikkje blir utlevert autorisasjons-objekter som er upresise, slik at mottaker misforstår hvilke rettigheter innlogga bruker faktisk har for de ulike avgiverne.
 
-### Avgiver-begresning
+### Rettigheter/operasjoner
 
-Kan vere hensiktsmessig å la klient åpne for mulighet til å velge flere representasjonsforhold, men viktig at brukeren har kontroll og får bestemme selv om dette faktisk skal skje.
+Altinn sin datamodell åpner for at en bruke kan tideles ulike rettigheter/opersjon på en ressurs.  Eksempel på slike er "les", "skriv", "signer".
+
+For Ansattporten tror vi at de fleste tjenester ikke trenger å skille på denne dimensjonen, og har derfor valgt å ikke inkludere slik informasjon i protokollen som default etter følgende oppførsel: Dersom tjenesten forespør en ressurs som bruker rettigheter, så er det tilstrekkelig for Ansattporten at brukeren har 1 av disse satt for en avgiver, for at avgiveren havner i avgiverdialogen. I responsen vil Ansattporten kun utlevere ressursen, og ikke rettigheten(e).
+
+Dersom tjenesten derimot eksplisitt spør etter rettigheter:
+```
+urn:altinn:resource:{tjenestekode}:{tjenesteutgave}:{rettighet}  
+```
+så vil avgiver-dialog populeres kun med avgivere som brukeren har den aktuelle rettigheten for,  og responsen vil også inkludere rettigheten:
+
+
+```
+"sub": "WE0DjFv9ygb2rjS7s_tXsg-fez2Co3Q8oxUmcvQ0mzQ=",
+"iss": "https://ansattporten.no/",
+"pid": "<fnr sluttbruker>",
+...
+"authorization_details": [
+  {
+    "type": "ansattporten:altinnressurs",
+    "ressurs": "urn:altinn:3906:141205:les"
+    "ressurs_name": "A01 a-melding",
+    "avgiver": [{
+        "Authority": "iso6523-actorid-upis",
+        "ID": "0192:999888777"  // org.no til arbeidsgiveren som den innlogga brukeren har valgt i org.velger
+    }]
+  }
+]
+```
+
+Tjenester bør unngå å spørre etter en kombinasjoner på "ressurs-nivå" og "rettighets-nivå", da dette trolig vil føre til utfordringer både i å lage en forståelig avgiver-dialog, men også i tolking av returnerte autorisasjonsobjekter.
+
+
+### Flervalg og avgiver-begresning
+
+Det kan vere hensiktsmessig å la klient åpne for mulighet til å velge flere representasjonsforhold, men viktig at brukeren har kontroll og får bestemme selv om dette faktisk skal skje.
 
 
 
@@ -180,13 +223,13 @@ Kan vere hensiktsmessig å la klient åpne for mulighet til å velge flere repre
 
 Se eksempel på mulig avgiver-dialog her: https://app.moqups.com/Lj7L3ahE5T/view/page/ad64222d5
 
-TODO: her er en motsetning mellom bruksmønsteret for proff-brukere (regnskapsmedarbeidere) som kan representere opp til 100 organisasjoner på en dag, kontra privat-bruker (eksempelet med person som har signeringsrett BÅDE for stort foretak i jobbsammenheng OG for skolekorpset til eget barn,  og som selvsagt ikke ønsker at disse skal kunne blandes/misbrukes).  Det er kanskje mest realistisk å måtte innføre egne autorisasjonstype av type `ansattporten:proff` og ha egen avgiver-velger for dettte, enn å forsøke å konstruere EN dialog som skal håndtere begge typer?
+TODO: her er en motsetning mellom bruksmønsteret for proff-brukere (regnskapsmedarbeidere) som kan representere opp til 100 organisasjoner på en dag, kontra privat-bruker (eksempelet med person som har signeringsrett BÅDE for stort foretak i jobbsammenheng OG for skolekorpset til eget barn,  og som selvsagt ikke ønsker at disse skal kunne blandes/misbrukes).  Det er kanskje mest realistisk å måtte innføre egne autorisasjonstype av type `ansattporten:proff` og ha egen avgiver-velger for dettte, enn å forsøke å konstruere EN dialog som skal håndtere begge typer? (men det hensyntar daikke privat-brukerens behov, dersom tjenesten valgte proff-bruker-dialog... )
 
 
 
 ### Lokalt hurtigbytte av avgiver
 
-Formål: gjere det enkelt for proff-brukere å kunne bytte avgiver raskt.  Slike brukere har mange (potensielt flere hundre) avgivere, og det vil være uhengsiktmessig å redirecte hele browseren til Ansattporten hele tiden (spesielt viss klienten er en desktop-applikasjon eller SPA.)
+Formål: gjere det enkelt for proff-brukere å kunne bytte avgiver raskt.  Slike brukere har mange (potensielt flere hundre) avgivere, og det vil være uhengsiktmessig å redirecte hele browseren til Ansattporten hver gang brukeren skal bytte avgiver  (spesielt viss klienten er en desktop-applikasjon eller SPA.)
 
 Istedet får brukeren mulighet til å velge  i et lokal GUI kven av dei andre mulege avgiverne ein ønskjer å representere.
 
@@ -194,8 +237,8 @@ Virkemåte:
 
 #### 1. Førstegangs pålogging.
   * Ansattporten viser liste med potensielle representasjonsforhold (=kandidatliste).  
-  * Bruker velger organisasjon på vanlig måte. Klient får token.
-  * Ansattporten cacher hele kandidatliste knyttet til SSO-sesjon/autorisasjonen.
+  * Bruker velger organisasjon på vanlig måte. Bruker må kanskje hake av for å bruke hurtigbytte for å hindre misbruk.  Klient får token.
+  * Ansattporten cacher hele kandidatliste knyttet til autorisasjonen.
 
 #### 2. Klient kaller dedikert endepunkt for hente kandidatliste
 
@@ -252,16 +295,17 @@ HTTP 200 OK
 Content-Type: application/json
 
 {
-    "access_token": eyJ..  <nytt_token, av forespurt type>,
+    "access_token": "eyJ..""  <nytt_token, av forespurt type>,
     "issued_token_type": urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aid_token,  // eller access_token
-    "token_type": "N_A",    // "Bearer" dersom issued_token_type=access_token
-    "expires_in: 120        // Levetid, dersom issued_token_type=access_token
+    "token_type": "N_A",       // "Bearer" dersom issued_token_type=access_token
+    "expires_in: 120           // Levetid, dersom issued_token_type=access_token
+    "refresh_token": "sdc1..." // ?(er det behov for refresh)
 }
 ```
 
 Klienten må bruke samme klient-autentiseringsmetode mot /tokenexchange som mot /token.
 
-Kandidatliste caches i Ansattporten i X minutter, oppfriskes mot Altinn dersom eldre.
+Kandidatliste caches i Ansattporten i X minutter, oppfriskes mot Altinn dersom eldre. Oppfrisking kan kun redusere kandidatliste, ikke øke (for å hindre at klienten får tilgang til avgivere som brukeren ikke godtok i avgiverdialogen), dersom ikke kandidate-liste=<alle mine avgivere>.
 
 Hurtigbytte må ikkje kunne misbrukast til å gje klienten tilgang på vegne av ein avgiver som sluttbrukar ikkje ønskjer (det er teknisk sett mogeleg for klient å gjere tokenexchange-kallet utan å faktisk vise lokal GUI til sluttbruker). Dette betyr (truleg) at klienten må aktivt forespørre støtte for hurtigbytte, og då må dette visast og aktiverast av sluttbruker i tilgangsdialog.
 
@@ -295,11 +339,37 @@ For å utstede access_token vil inneholde samme struktur, men her kreves `locati
 
 TBD
 
-- videredistribusjon ?
-- SAMTYKKE TIL Å UTLEVERE YRKESKODE FRA
-- reelt samtykke, (du må kunne seie nei)
+En ansatt er alltid knyttet til underenhet (virksomheten) og ikkje juridisk enhet (den opplysningspliktige).  
+  - De orgnummerne som ID-porten/Maskinporten "kjenner", er normalt juridisk enhet (topp-nivå) - då det er desse som kan få utstedt virksomhetssertifikat.
 
-Teknisk handterer me vel AA-registeret via Altinn Autorisasjon, so det vert "berre" eigne ressurs-urn'er ?
+Et arbeidsforhold har alltid bare yrkeskode, det er ikkje alltid intuitiv både kva kode som HR set på ein tilsett, det kan vere andre avhengigheiter som gjer at HR velger ein kode som ikkje er "passande" for ei tilganstyringsformål.  Då kan det bli utfordrande for tjenesteutviklere kven ein skal velge.  
+  - kva skal skje om "forsker" blir daglig leder, då mister ein alle tilgangene?
+  - men det er mogeleg å opprette *fleire* arbeidsforhold på same person (kan vere både "rektor" og "vaktmester" på samme skole)
+
+
+Må ha en god innsikt i yrkes- og næringskoder-hierarkiet før en tar dette i bruk til tilgangstyringsbeslutninger.
+    - Kan finne en "forsker" i en gren, og en annen "forsker" i en annen gren som du ikke forventa
+
+Uklart korleis ein skal håndtere permisjoner.  (permisjons-id)
+
+Det finst ogso eit felt "arbeidsforhold-id" som ikkje har noko med "ansatt-id" å gjere, kan t.d. bytte dersom bedriften bytter HR-system
+
+AA-registeret (gjennom Altinn?) bør kanskje vere ein "opt-in", arbeidsgiver må bestemme om min org(hiererki) skal kunne brukes til tilgangsbeslutninger.
+
+
+AA-registrert vil tilby oppslags-API.  Kanskje Ansattporten kan bruke dette direkte i starten.  På sikt vil aa-registeret vil tilby hendelseslister på individ-nivå.
+
+ 
+
+TODO:
+- videredistribusjon ?
+- SAMTYKKE TIL Å UTLEVERE YRKESKODE  (og da må det være reelt samtykke, (du må kunne seie nei))
+
+
+
+
+
+
 
 # Brukerreise 4: Punkt-innlogging uten SSO
 
