@@ -335,6 +335,12 @@ Dersom man ønsker datautveksling mellom virksomheter, der en API-tilbyder kreve
 For å utstede access_token vil inneholde samme struktur, men her kreves `locations`-claim i tillegg dersom den generiske "ansattporten"-prefixet skal trustes av APIet (*TODO! Hvorfor kreves locations/aud?*)
 
 
+
+Dette mønster bør vere mogeleg å kombinere med pseudoymiserte tokens, tilsvarande slik dette er realisert med ID-porten idag.  Det velkjente eksemplet med "*mekaniker logger inn til bilverksted-fagsystem og kalle EU-kontroll-APIet til Statens Vegvesen*" er jo strengt tatt meir eit ansattport-scenario enn er ID-porten-scenarioet.
+
+
+
+
 # Brukerreise 3: Informasjon fra AA-registeret
 
 TBD
@@ -359,7 +365,7 @@ AA-registeret (gjennom Altinn?) bør kanskje vere ein "opt-in", arbeidsgiver må
 
 AA-registrert vil tilby oppslags-API.  Kanskje Ansattporten kan bruke dette direkte i starten.  På sikt vil aa-registeret vil tilby hendelseslister på individ-nivå.
 
- 
+
 
 TODO:
 - videredistribusjon ?
