@@ -254,7 +254,7 @@ Ein annan variant er innlogging med nivå-høgt eID gjennom eIDAS:
       "amr" : [ "eidas" ],
 
       "fhnummer": "17012054321",
-      "pid": "17012056789"
+      "pid":      "47012056789"
 
       "email": "epost@norge.no",
       "mobile": "+4799998888"
