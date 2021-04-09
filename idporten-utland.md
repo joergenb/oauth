@@ -178,7 +178,7 @@ Men denne blir kanskje litt overkill for _alle_ attributtar?  Under eit døme de
     }
 ```
 
-#### Alt 4: Hybrid-løsning, OIDaa for "sterke ting" og flatt for resten:
+#### Alt 4: Hybrid-løsning, IdAA for "sterke ting" og flatt for resten:
 
 "Sterke" ting er då ting som passlesning som her:
 
