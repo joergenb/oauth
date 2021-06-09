@@ -12,7 +12,14 @@ For **kontroll på egen identitet** ser SSI-tilhengere for seg at istedet for �
 
 For **kontroll med egne data** ser man videre for seg å putte "bevis" inn i lommeboka. Bevis blir utstedt av ulike utstedere. For eksempel kan et universitet utstede et vitnemål til lommeboka til en student.    Brukeren  bestemmer selv, ved hjelp av lommeboka, hvis og når beviset skal deles med andre aktører.
 
-Vi trur at W3C-standarden **Verifiable Credentials** er vesentleg for å kunne realisere SSI.
+Vi trur at W3C-standarden **Verifiable Credentials** er vesentleg for å kunne realisere SSI.  I denne inngår følgjande aktørar:
+
+![image](vc.png)
+
+* **Issuer** - utsteder av bevis
+* **Holder** - slutt-bruker med ei digital lommebok
+* **Verifier** - den som har behov for å sjå eit bevis
+* **Verifiable Data Registry** - tillitsrammeverk, "noe" der de tre andre aktørene finne ut om og i hvilken grad de kan stole på hverandre.
 
 ## Oppgåve
 
@@ -56,7 +63,6 @@ Oppsummere funn og anbefalingar
 
 Typisk vil dette vere eit levande dokument som vert ferdigstilt iterativt etter kvart som prosjektet går framover.
 
-![image](vc.png)
 
 Framlegg til aspekt som kan inkluderast:
 
