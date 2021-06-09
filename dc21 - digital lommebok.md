@@ -56,6 +56,8 @@ Oppsummere funn og anbefalingar
 
 Typisk vil dette vere eit levande dokument som vert ferdigstilt iterativt etter kvart som prosjektet går framover.
 
+![image](vc.png)
+
 Framlegg til aspekt som kan inkluderast:
 
 - sette seg inn i SSI-økosystemet, aktuelle trender, initativ med momentum, forkasta spor, dead-ends.
