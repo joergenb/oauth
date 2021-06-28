@@ -90,8 +90,9 @@ der `ressurs` må følgje desse reglane:
 
 |Ressurs-identifikator| Beskrivelse|Eksempel|
 |-|-|-|
-|urn:altinn:role:{rolletypekode} | Kan velge fra allowlist av [Altinn-rollene](https://www.altinn.no/api/metadata/roledefinitions?language=1044). | altinn:role:siskd
 |urn:altinn:resource:{tjenestekode}:{tjenesteutgave} | Altinn 2 [tenestekode/utgåve](https://www.altinn.no/api/metadata?language=1044) | altinn:resource:3906:141205
+|urn:altinn:resource:ansattporten:{apressurs} | Egne, spesialiserte "Ansattporten"-ressurser som Kunde oppretter via selvbetjening | altinn:resource:ansattporten:min_egen_identifikator
+
 |urn:altinn:resource:{org}:{appname} | Altinn 3 [org/app](https://www.altinn.no/api/metadata?language=1044) | altinn:resource:skd:sirius
 
 
