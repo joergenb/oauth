@@ -39,7 +39,9 @@ Ein PoC bør ta utgangspunkt i eit konkret use-case for å demonstrere heile ver
 
 4. Brønnøysundregistrene utsteder bevis for at brukeren er styrleder for et selskap (KVA ER TENESTA?)
 
-5. ?
+5. Få førerkortet inn i walleten og i VC format slik at det blir gangbart i andre land.
+
+6.
 
 
 Spørsmål som Digdir er interessert i å få svar på gjennom arbeidet:
@@ -101,7 +103,8 @@ Vurdere ulike modeller for teneste-lommebok-kommunikasjon (pull: tenesta ber om 
 #### C: Tillitsrammeverket
 
 Lag ei løysing for "Verifiable Data Registry". Her skal lommeboka (Holder) og tenester (Verifier) kunne slå opp for å finne publicnøkkelen til godkjende utstedere.
-Vurdere korleis ein kan definiere skjema for bevis ("hvordan ser et vitnemål ut?")
+Vurdere kvar tjeneste-utviklere skal leite for å finne tilgjengelige bevis-typer ("hvilke vitnemåls-definisjoner finnes" og "hvilket av de er rett vitnemål for meg?")
+Vurdere korleis ein kan definiere skjema for bevis ("hvordan ser et vitnemål ut?").
 
 #### D: Tenesta
 Lag ei nett-teneste som krev at brukaren har eit  bevis av ein gitt type.  
@@ -127,6 +130,8 @@ Denne oppgåva kan fort vere omfattande pga tid for å setje opp ID-porten, så 
 ## Relevant bakgrunn
 
 **Sylferskt:** EU vil utvikle en europeisk identitet basert på lommebok-tankegangen:   https://digital-strategy.ec.europa.eu/en/news/commission-proposes-trusted-and-secure-digital-identity-all-europeans
+
+Høyr gjerne gjennom denne digdir-podcasten: https://www.digdir.no/digitale-felleslosninger/eu-sikter-mot-en-felles-europeisk-eid/2625
 
 Norsk initiativ: https://www.din.foundation/
 
@@ -155,6 +160,18 @@ https://docs.microsoft.com/en-us/azure/active-directory/verifiable-credentials/d
 
 https://www.youtube.com/watch?v=62IYP1XtTYU
 kan merke oss at denne aktøren bruker *ikkje* DIDs og/eller blokkkjeder, men heller tradisjonell TLS med PKI til å etablere tillit mellom issuer og verifier.
+
+
+internasjonalt covid tillitsrammeverk, basert på VC trur eg: https://www.lfph.io/2021/06/08/gccn/
+
+
+EU sitt COVID-sertifikat, teknisk implementasjon inkl tillitsrammeverk (brukar ikkje VC?): https://github.com/eu-digital-green-certificates
+
+EU-initiv på utdanning: https://europa.eu/europass/en/europass-digital-credentials-interoperability
+
+
+
+
 
 
 https://dwhuseby.medium.com/dont-use-dids-58759823378c   argumenterer sterkt for at DIDs ikkje har noko interoperabel framtid, fordi det finst 96 forskjellige DID-metodar...
