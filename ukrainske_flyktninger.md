@@ -14,13 +14,13 @@
 1. Flyktning innstallerer eID-app (Buypass eller MinID, primært  på forhånd, når de er i «ventesona» før ankomstregistrering)
 
 1. PU-saksbehandler gjennomfører ID-kontroll og trykker på «bestill» knapp i eget fagsystem (DUF)
-  1. Sender API-kall til Digdir “flyktninge-orkestrator” med nødvendig informasjon
-  1. Orkestrator sender opprettelses-kall til aktuell eID og får aktiveringskode i retur
-  1. Dersom flyktning har tilstrekkeleg ID-dokument, vert Buypass valgt. Dersom ikkje, fallback til MinID.
-  1. Orkestrator oppretter flyktning i KRR.
-  1. Orkestrator oppretter digital postkasse hjå postkasse-leverandør
-  1. Orkestrator sender ut ein mail på ukrainsk/russisk (og ein digital post) til flyktning med informasjon om eID og postkasse, og informasjon om korleis ein kan reservere seg mot digital post / fjerne postkasse / slette seg frå KRR.
-  1. Orkestrator returnerer aktiveringskode til DUF
+  - Sender API-kall til Digdir “flyktninge-orkestrator” med nødvendig informasjon
+  - Orkestrator sender opprettelses-kall til aktuell eID og får aktiveringskode i retur
+  - Dersom flyktning har tilstrekkeleg ID-dokument, vert Buypass valgt. Dersom ikkje, fallback til MinID.
+  - Orkestrator oppretter flyktning i KRR.
+  - Orkestrator oppretter digital postkasse hjå postkasse-leverandør
+  - Orkestrator sender ut ein mail på ukrainsk/russisk (og ein digital post) til flyktning med informasjon om eID og postkasse, og informasjon om korleis ein kan reservere seg mot digital post / fjerne postkasse / slette seg frå KRR.
+  - Orkestrator returnerer aktiveringskode til DUF
 
 1. Fagsystemet viser aktiveringskoden til PU-saksbehandler
 
