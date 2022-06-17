@@ -35,7 +35,7 @@ Hovedelement:
 - APIet er sikra med bearer tokens frå Maskinporten
   - dedikert oauth2-scope for formålet (`idporten:create_eid`) som Digdir kontrollerer tilgang til
   - konfidensialitet og integritet er elles sikra med vanleg TLS (med "god" cipher)
-  - ønsker å bruke innbygger-bunde token, dvs. at token er låst til aktuell flytkning, og at UDI må hente nytt kvar gong.  Tar ned riisko ved stjåle tokens.
+  - ønsker å bruke [innbygger-bunde token](https://docs.digdir.no/docs/Maskinporten/maskinporten_func_pid_restricted_tokens), dvs. at token er låst til aktuell flytkning, og at UDI må hente nytt kvar gong.  Tar ned riisko ved stjåle tokens.
 
 - vilkår for å få Buypass er at request inneheld naudsynt info om id-dokument i `evidence`-strukturen.    
     - Dersom dette manglar, vil orkestrator ustede MinID istaden.
