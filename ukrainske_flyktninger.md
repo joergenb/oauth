@@ -36,7 +36,7 @@ Hovedelement:
   - dedikert oauth2-scope for formålet (`idporten:create_eid`) som Digdir kontrollerer tilgang til
   - konfidensialitet og integritet er elles sikra med vanleg TLS (med "god" cipher)
   - ønsker å bruke innbygger-bunde token, dvs. at token er låst til aktuell flytkning, og at UDI må hente nytt kvar gong.  Tar ned riisko ved stjåle tokens.
-  
+
 - vilkår for å få Buypass er at request inneheld naudsynt info om id-dokument i `evidence`-strukturen.    
     - Dersom dette manglar, vil orkestrator ustede MinID istaden.
 
@@ -90,10 +90,10 @@ Authorization: Bearer xxxxxxx                                   //maskinporten-t
 
 #### respons
 
-200 OK  med aktiveringskode i json-body
-400 bad reqeuest med error_description
-401 utgått maskinporten-token
-403 feil scope eller mismatch pid i token og request body
+* 200 OK  med aktiveringskode i json-body
+* 400 bad reqeuest med error_description
+* 401 utgått maskinporten-token
+* 403 feil scope eller mismatch pid i token og request body
 
 
 #### alterantiv utan OpenID IdAA-spec:
