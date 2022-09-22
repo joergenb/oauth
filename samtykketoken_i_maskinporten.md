@@ -94,6 +94,28 @@ TBD: bør type-definisjonane matche utgåande RAR-type (dvs. tjenesteeierspeisif
 
 Ein variant av alt 2 der Maskinporten trigger på `"scope": "altinn:consenttokens")`.  Fordel: slepp oppgi eit ekstra claim i request.  Ulempe:  hard binding mellom kunde sine scope-definisjonar og oppførsel i Maskinporten.
 
+#### Alt 4: token-exchange?
+
+Her innfører vi IKKJE nye token-typer eller grants i maskinporten.  Men "dyttar ut" til datakonsument å veksle eit ordinært Maskinporten-token inn i eit samtykke-token:
+
+```
+POST /token HTTP/1.1
+Host: maskinporten.no
+Authorization: Basic cnMwODpsb25nLXNlY3VyZS1yYW5kb20tc2VjcmV0
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Atoken-exchange
+&resource=https%3A%2F%2Fwww.altinn.no%2F
+&requested_token_type=urn%3Aaltinn%3Asamtykke
+&subject_token=<maskinporten-token>
+&subject_token_type=
+     urn%3Aietf%3Aparams%3Aoauth%3Atoken-type%3Aaccess_token
+
+```
+
+fordel med dette mønstere er at me (kanskje) kan holde maskinporten lettare ved å ha eigne mikrotjenster for ulike token-typar, (men det er ingen eigen tokenexchange-url publisert på .well-known, so då trengs uansett ein rutings-mekanisme)
+det er truleg sett på som ein stor ulempe for kundane at dei alltid må først få eitt token, og så veksle inn i eit anna token.
+
 #### Felles
 
 **Bruk av databehandler** er basert på den vanlege [delegering i eOppslag-funksjonaliteten i Maskinporten](https://docs.digdir.no/docs/Maskinporten/maskinporten_func_delegering) for kunde-leverandørforhold.
@@ -180,5 +202,6 @@ Responsen er er eit samtykke-token frå Maskinporten.  Denne modifisert ihht dag
 
 
 # Prosess 1:  Innbyggar inngår samtykke
+
 
 TBD
