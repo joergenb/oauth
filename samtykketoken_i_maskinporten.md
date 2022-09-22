@@ -15,7 +15,7 @@ Me ser først på nr 2 og 3:
 ```mermaid
 graph LR;
   Datakonsument-->|henter token|Maskinporten
-  Maskinporten-->|forespør samtykke|Altinn Autorisasjon
+  Maskinporten-->|forespør samtykke|Altinn
   Maskinporten-->|returnerer token|Datakonsument
   Datakonsument-->|henter data|API
 ```
