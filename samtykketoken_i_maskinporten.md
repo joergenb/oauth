@@ -6,7 +6,6 @@ Det er tre prosesser knytta til [Samtykkeløsningen](https://altinn.github.io/do
 2. Datakonsument henter token
 3. Datakilde validerer token og utleverer data
 
-
 Me ser først på nr 2 og 3:
 
 ## Prosess 2+3: Samtykke-token frå Maskinporten
@@ -159,7 +158,7 @@ Responsen er er eit samtykke-token frå Maskinporten.  Denne modifisert ihht dag
 "exp": 1503860347,
 "jti": "a9daa57c-0b68-4ba2-a953-7567a99bd0f0",
 
-// Informasjon om klienten som ba om tokenet:
+// Informasjon om klienten som ba om tokenet, standard Maskinporten-claims:
 "client_id": "asdkjflkdsajfsadlf",
 "client_amr": "private_key_jwt",
 "token_type": "Bearer",
@@ -171,7 +170,7 @@ Responsen er er eit samtykke-token frå Maskinporten.  Denne modifisert ihht dag
     "authority" : "iso6523-actorid-upis",
     "ID" : "0192:991825827"
   },
-"delegation_source": "https://altinn.no"
+"delegation_source": "https://altinn.no",
 
 // Informasjon om sjølve samtykket:
 "authorization_details": [
