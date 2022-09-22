@@ -58,10 +58,41 @@ Viss datakonsument har mista id'en til samtykke-instansen, kan dei nytta grantet
 |CoveredBy|Orgnummer til datakonsument  (TRENG ME DENNE, KUNNE VORE PLUKKA FRÅ KLIENTAUTNETISERING?|
 |ServiceCodes| Array med tjenestekoder som samtykket skal gjelde for. Døme: `[ "4629_2", "4630_2"` |
 
+**Døme på JWT-body:**
+
+```
+"aud":"https://maskinporten.no",
+"iss": "some_client_id",
+"iat": ..
+"exp": ..
+"jti": ..
+"scope": "altinn:consenttokens",
+"consent_id": "c7dbe642-0fc1-4c3b-8959-8a92e3e1f17d"
+```
+
 
 #### Alt 2: Innføre token-type i Maskinporten
 
-Maskinporten innfører `maskinporten_token_type` som eit valfritt claim i vanlege JWT-grants.  Dette claimet trigger so spesiell oppførsel.
+Maskinporten innfører `maskinporten_token_type` som eit valfritt claim i vanlege JWT-grants.  Dette claimet trigger so spesifikk oppførsel alt etter kva type som er førespurt. For samtykkeføremål so er verdien `urn:altinn:samtykke`)
+
+TBD: bør type-definisjonane matche utgåande RAR-type (dvs. tjenesteeierspeisifkk urn:altinn...) eller ikkje?  (urn:maskinporten...)
+
+**Døme på JWT-body:**
+
+```
+"aud":"https://maskinporten.no",
+"iss": "some_client_id",
+"iat": ..
+"exp": ..
+"jti": ..
+"maskinporten_token_type": "urn:altinn:samtykke",
+"scope": "altinn:consenttokens",
+"consent_id": "c7dbe642-0fc1-4c3b-8959-8a92e3e1f17d"
+```
+
+#### Alt 3: mapping mellom scopes og token-typar
+
+Ein variant av alt 2 der Maskinporten trigger på `"scope": "altinn:consenttokens")`.  Fordel: slepp oppgi eit ekstra claim i request.  Ulempe:  hard binding mellom kunde sine scope-definisjonar og oppførsel i Maskinporten.
 
 #### Felles
 
@@ -145,3 +176,9 @@ Responsen er er eit samtykke-token frå Maskinporten.  Denne modifisert ihht dag
 
 ]
 ```
+
+
+
+# Prosess 1:  Innbyggar inngår samtykke
+
+TBD
