@@ -6,7 +6,18 @@ Det er tre prosesser knytta til [Samtykkeløsningen](https://altinn.github.io/do
 2. Datakonsument henter token
 3. Datakilde validerer token og utleverer data
 
-Me ser først på nr 2 og 3:
+Me ser først på nr 2 og 3 nedanfor
+
+# Oppsummering av endringer
+
+- Maskinporten blir utsteder av samtykketokens
+  - Det nye samtykketokenet innheld då både virksomhetsautentisering, kontroll av databehandler-delegering og det detaljerte samtykket fra innbygger
+  - Det nye samtykketokenet er modifisert til å vere meir "oauthsk"
+    - `AuthorizationCode` endres til `consent_id`
+    - Endrar frå CamelCase til snake_case
+    - Omstrukturert ihht. [RAR](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-rar-12) med `authorization_details`-claimet, dvs. endrar frå flate claims til ein array av samtykker per tjenestekode og varigheit.
+- Sjølve samtykket persisteres og vert framleis forvalta i Altinn Autorisasjon
+  - GUI, tilbaketrekking, etc.
 
 ## Prosess 2+3: Samtykke-token frå Maskinporten
 
@@ -46,29 +57,6 @@ eller:
 |ServiceEdition| Tjenesteutgave under tjenestekoden. Døme: `"2"` |
 
 Den siste her er noko meir generisk, t.d. viss datakonsument har mista id'en til samtykke-instansen, kan dei nytta grantet som ein oppslagsmekanisme for å sjekka om dei har framleis har samtykke frå brukaren
-
-
-
-
-#### Alt 2: Innføre token-type i Maskinporten
-
-Maskinporten innfører `maskinporten_token_type` som eit valfritt claim i vanlege JWT-grants.  Dette claimet trigger so spesifikk oppførsel alt etter kva type som er førespurt. For samtykkeføremål so er verdien `urn:altinn:samtykke`)
-
-TBD: bør type-definisjonane matche utgåande RAR-type (dvs. tjenesteeierspeisifkk urn:altinn...) eller ikkje?  (urn:maskinporten...)
-
-**Døme på JWT-body:**
-
-```
-"aud":"https://maskinporten.no",
-"iss": "some_client_id",
-"iat": ..
-"exp": ..
-"jti": ..
-"maskinporten_token_type": "urn:altinn:samtykke",
-"scope": "altinn:consenttokens",
-"consent_id": "c7dbe642-0fc1-4c3b-8959-8a92e3e1f17d"
-```
-
 
 #### Bruk av databehandler
 
