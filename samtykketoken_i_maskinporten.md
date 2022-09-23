@@ -34,8 +34,6 @@ sequenceDiagram;
   Datakonsument->>API: henter data med samtykketoken
 ```
 
-**Ved mottak av request** vil Maskinporten sende eit kall til Altinn Autorisasjon for å hente ut sjølve samtykket, validere reponsen, og bygge eit samtykke-token som inneheld både virksomhetsautentisering og samtykke-informasjon i samme token.
-
 
 ### Request:
 
@@ -47,16 +45,18 @@ Følgjande scope er naudsynt for å få ut samtykketokens (dvs. gjenbruk av dage
 |-|-|
 |scope|Må vere `altinn:consenttokens` |
 
-I tilegg trengs det innførast samtykke-spesifikke element i førespurnaden.   Her ser vi for oss å anten referert til samtykke-instansen vi ein identifikator, eller "indirekte" via oppslag på parts- og tjenstekodeforhold, dvs. anten
+I tilegg trengs det innførast samtykke-spesifikke element i førespurnaden.   Her ser vi for oss å anten referert til samtykke-instansen vi ein identifikator (som dagens code), eller "indirekte" via oppslag på parts- og tjenstekodeforhold, dvs. anten:
 
+|-|-|
 |consent_id|Ein unik identifikator på sjølve samtykket.  (Dette vart tidlegare kalla `AuthorizationCode`, men endrar namn for å unngå forvirring med standard oauth-claim)|
 
 eller:
 
-|OfferedBy|Fødselsnummer til sluttbruker. |
-|CoveredBy|Orgnummer til datakonsument  (TRENG ME DENNE, KUNNE VORE PLUKKA FRÅ KLIENTAUTNETISERING/delegering?|
-|ServiceCode| Tjenestekode som samtykket skal gjelde for. Døme: `"4629"` |
-|ServiceEdition| Tjenesteutgave under tjenestekoden. Døme: `"2"` |
+|-|-|
+|offered_by|Fødselsnummer til sluttbruker. |
+|vovered_by|Orgnummer til datakonsument  (TRENG ME DENNE, KUNNE VORE PLUKKA FRÅ KLIENTAUTNETISERING/delegering?|
+|service_code| Tjenestekode som samtykket skal gjelde for. Døme: `"4629"` |
+|service_edition| Tjenesteutgave under tjenestekoden. Døme: `"2"` |
 
 Den siste her er noko meir generisk, t.d. viss datakonsument har mista id'en til samtykke-instansen, kan dei nytta grantet som ein oppslagsmekanisme for å sjekka om dei har framleis har samtykke frå brukaren
 
