@@ -47,11 +47,13 @@ Følgjande scope er naudsynt for å få ut samtykketokens (dvs. gjenbruk av dage
 
 I tilegg trengs det innførast samtykke-spesifikke element i førespurnaden.   Her ser vi for oss å anten referert til samtykke-instansen vi ein identifikator (som dagens code), eller "indirekte" via oppslag på parts- og tjenstekodeforhold, dvs. anten:
 
+|claim|skildring|
 |-|-|
 |consent_id|Ein unik identifikator på sjølve samtykket.  (Dette vart tidlegare kalla `AuthorizationCode`, men endrar namn for å unngå forvirring med standard oauth-claim)|
 
 eller:
 
+|claim|skildring|
 |-|-|
 |offered_by|Fødselsnummer til sluttbruker. |
 |vovered_by|Orgnummer til datakonsument  (TRENG ME DENNE, KUNNE VORE PLUKKA FRÅ KLIENTAUTNETISERING/delegering?|
