@@ -79,6 +79,7 @@ Dvs. databehandlar som skal hente samtykke-tokens på vegne av data-konsument (b
 
 Feilmeldinger:
 
+|feilkode|skildring|
 |-|-|
 |400|  bad request|
 |400| bad request - "noe feil mot altinn"  (truleg feil i Maskinporten og ikkje hjå konsument)|
