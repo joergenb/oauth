@@ -56,7 +56,7 @@ eller:
 |claim|skildring|
 |-|-|
 |offered_by|Fødselsnummer til sluttbruker. |
-|vovered_by|Orgnummer til datakonsument  (TRENG ME DENNE, KUNNE VORE PLUKKA FRÅ KLIENTAUTNETISERING/delegering?|
+|covered_by|Orgnummer til datakonsument  (TRENG ME DENNE, KUNNE VORE PLUKKA FRÅ KLIENTAUTNETISERING/delegering?|
 |service_code| Tjenestekode som samtykket skal gjelde for. Døme: `"4629"` |
 |service_edition| Tjenesteutgave under tjenestekoden. Døme: `"2"` |
 
