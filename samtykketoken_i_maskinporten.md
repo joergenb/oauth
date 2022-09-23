@@ -8,7 +8,9 @@ Det er tre prosesser knytta til [Samtykkeløsningen](https://altinn.github.io/do
 
 Me ser først på nr 2 og 3 nedanfor
 
-# Oppsummering av endringer
+
+
+## Prosess 2+3: Samtykke-token frå Maskinporten
 
 - Maskinporten blir utsteder av samtykketokens
   - Det nye samtykketokenet innheld då både virksomhetsautentisering, kontroll av databehandler-delegering og det detaljerte samtykket fra innbygger
@@ -19,13 +21,13 @@ Me ser først på nr 2 og 3 nedanfor
 - Sjølve samtykket persisteres og vert framleis forvalta i Altinn Autorisasjon
   - GUI, tilbaketrekking, etc.
 
-## Prosess 2+3: Samtykke-token frå Maskinporten
-
-
 ```mermaid
 sequenceDiagram;
   Datakonsument->>Maskinporten: forspør token med consent_id
-  note over Maskinporten: klient-autentisering + scope-validering
+  note over Maskinporten: virksomhetsautentisering + scope-validering
+  opt: dersom databehandler
+    Maskinporten->>Altinn: /delegations(consumer_org, supplier_org, scope)
+  end
   Maskinporten->>Altinn: oppslag på consent_id
   Altinn->>Maskinporten: samtykke-detaljer
   Maskinporten->>Datakonsument: returner samtykketoken
