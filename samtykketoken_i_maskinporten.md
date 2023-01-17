@@ -16,10 +16,11 @@ Me ser først på nr 2 og 3 nedanfor
   - Det nye samtykketokenet innheld då både virksomhetsautentisering, kontroll av databehandler-delegering og det detaljerte samtykket fra innbygger
   - Det nye samtykketokenet er modifisert til å vere meir "oauthsk"
     - `AuthorizationCode` endres til `consent_id`
-    - Endrar frå CamelCase til snake_case
     - Omstrukturert ihht. [RAR](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-rar-12) med `authorization_details`-claimet, dvs. endrar frå flate claims til ein array av samtykker per tjenestekode og varigheit.
+    - Endrar frå CamelCase til snake_case
+
 - Sjølve samtykket persisteres og vert framleis forvalta i Altinn Autorisasjon
-  - GUI, tilbaketrekking, etc.
+  - GUI, inngåelse, tilbaketrekking, etc.
 
 ```mermaid
 sequenceDiagram;
@@ -29,6 +30,7 @@ sequenceDiagram;
     Maskinporten->>Altinn: /delegations(consumer_org, supplier_org, scope)
   end
   Maskinporten->>Altinn: oppslag på consent_id
+  note over Altinn: validerer at consent_id er gyldig og tilhører Datakonsument
   Altinn->>Maskinporten: samtykke-detaljer
   Maskinporten->>Datakonsument: returner samtykketoken
   Datakonsument->>API: henter data med samtykketoken
@@ -37,7 +39,7 @@ sequenceDiagram;
 
 ### Request:
 
-Her bruker vi Maskinporten med grunnleggande JWT-grants på vanleg måte, men innfører `authorziation_details` som nytt claim i request, og der kvar auth_type trigger custom logikk.
+Her bruker vi Maskinporten med grunnleggande JWT-grants på vanleg måte, men innfører RAR, dvs. `authorization_details` som nytt claim i request, og der kvar auth_type trigger custom logikk.
 
 Følgjande scope er naudsynt for å få ut samtykketokens (dvs. gjenbruk av dagens scope)
 
@@ -60,7 +62,7 @@ eller:
 |service_code| Tjenestekode som samtykket skal gjelde for. Døme: `"4629"` |
 |service_edition| Tjenesteutgave under tjenestekoden. Døme: `"2"` |
 
-Den siste her er noko meir generisk, t.d. viss datakonsument har mista id'en til samtykke-instansen, kan dei nytta grantet som ein oppslagsmekanisme for å sjekka om dei har framleis har samtykke frå brukaren
+Den siste her er noko meir generisk, t.d. viss datakonsument har mista id'en til samtykke-instansen, kan dei nytta grantet som ein oppslagsmekanisme for å sjekka om dei har framleis har samtykke - og kva dette omfattar -  frå brukaren.
 
 #### Bruk av databehandler
 
