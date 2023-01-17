@@ -202,10 +202,13 @@ Sjå også utdanningssektoren sine innspel til Skate sin høyring om Felles Data
 
 Alle alternativa medfører at Maskinporten byrjar å utføre, i sambeid med Autorisasjon, fin-granulert tilgangskontroll for Altinn-API og evt.  3jdeparts-API som følger Autorisasjon sin "tilgangsmodell".   Dette er ei arkitekturmessige endring frå dagens bevisste avgrensing til grov-granulert tilgangskontroll.  Kan føre til "formålsutglidning" - eit "rush" av kunder som ønsker sin eigen auth-type?
 
+Det betyr også at ein tek eit langt steg i retning av at Maskinporten/ID-porten vert token-utsteder for "heile Altinn", må difor vurdere kva alternativ som skalerer best til omfamne Studio-apier, Events, DAN, formidling, etc.. etc.
+
+
 Korleis heng løysingsval saman med merkantil modell?  Sidan alle verksemder kan opprette virk.brukere i Altinn, betyr det at dei automatisk må få bli kunde av alle fellesløysingar?  Eller at det berre er Tenesteeigarar som kan motta virk.bruker.token ?
 
 
-Alt 2 ser ut til å skape ein tettare kobling mellom Autorisasjon og Maskinporten -
+Alt 2 ser ut til å skape ein tettare kobling mellom Autorisasjon og Maskinporten enn 1,
 
 
 
