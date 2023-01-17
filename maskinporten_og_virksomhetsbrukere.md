@@ -1,10 +1,37 @@
 # Samspel Maskinporten og Virksomhetsbrukere
 
+Kan me forbetre samspelet mellom Maskinporten og virksomheitsbrukarane i Altinn?
+
+
+## Dagens løysing
+
+Konsument må token-veksle eit Maskinporten-token mot Altinn platform for å få eit Altinn-token.
+
+
+```mermaid
+sequenceDiagram;
+  System->>Maskinporten: førespør token (altinn:instances.* ?)
+  note over Maskinporten: virksomhetsautentisering + scope-validering
+  opt: dersom databehandler
+    Maskinporten->>Autorisasjon: /delegations(consumer_org, supplier_org, scope)
+  end
+  Maskinporten->>System: MP access-token
+  System->>Autorisasjon: tokenexchange (MP access-token + virk.bruker+passord)
+  note over Autorisasjon: sjekk at virk.bruker = consumer_org.
+  note over Autorisasjon: valider passord
+  Autorisasjon->>System: Altinn-token
+  System->>API: førespør data med altinn-token
+  API-->>Autorisasjon: henter evt. nødv. info for autorisasjonsbeslutning
+    note over API: autorisére
+  API->>System:  returner data
+```
+
 
 ## Alt 1:  Virksomhetsbruker som ny token-type:
 
-Maskinporten vert utvida til å gje ut ein ny type "virksomhetsbruker-token"
-* same innhald som etter dagens tokenutveksling, og det er Autorisasjon som utfører all valideringslogikken for virk.brukaren.
+I dette alternativet vert Maskinporten utvida til å gje ut ein ny type "virksomhetsbruker-token"
+* dersom konsument har gyldig scope, vil Maskinporten sende kall til Autorisasjon om virk.bruker-autentisering
+* virk.bruker-tokenet har sme innhald som etter dagens tokenutveksling, og det er Autorisasjon som utfører all valideringslogikken for virk.brukaren.
 
 ```mermaid
 sequenceDiagram;
