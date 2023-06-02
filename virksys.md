@@ -38,13 +38,15 @@ graph LR;
 
 ```
 
-Virksomheitsystemet er altså mappa 1:1 til ein spesifikk Maskinporten-integrasjon. For å skape ein abstraksjon mellom virksomheitssytemet, og dei rettane/fullmaktene/delegeringane som systemet skal ha tilgang til, vert det innført eit konsept med "kundemappe" (eller "delegeringsmappe" el.)
+Virksomheitssystemet er altså mappa 1:1 til ein spesifikk Maskinporten-integrasjon. For å skape ein abstraksjon mellom virksomheitssytemet, og dei rettane/fullmaktene/delegeringane som systemet skal ha tilgang til, vert det innført eit konsept med "kundemappe" (eller "delegeringsmappe" el.)
+
 
 
 
 # Bruker-reise
 
 1. Ein Systemleverandør tilbyr ulike fagsystem for den profesjonelle marknaden  (T.d "Turboskatt" og "Turbo-MVA") for rekneskapsbyråer.  Systemleverandøren oppretter desse som virksomheitssystem gjennom Altinn, og gir dei naudsynte API-tilgangar som Systemleverandøren har tilgang til (vanlege oauth2 maskinporten scopes, t.d `skatteetaten:mva`)
+[Klikk her for å sjå detaljert prosess](./virksys - opprette.html).
 
 2. Eit regnskapsbyrå (="hjelper") ynskjer so å ta i bruk Turboskatt for eit subsett av eigne kundar ("part").  Rekneskapesbyrået oppretter ei eiga "kundemappe" i Altinn for dette (t.d "Landbruks-seksjonen", "VVS-kundar"). Ein bemyndiga hjå regnskapsbyrået koblar so kundemappa til virksomheitssystemet til Systemleverandøren. I denne prosessen vert det vist ei "samtykke"-side som informerer regnskapsbyrået om kva koblinga innebærer. (Systemleverandøren kan ogso "be om tilgang" og førehands-opprette ei kundemappe for regnskapsbyrået, dersom dette er meir hensiktsmessig).
 
@@ -89,4 +91,4 @@ Virksomheitsystemet er altså mappa 1:1 til ein spesifikk Maskinporten-integrasj
 
 Klikk på lenke for å sjå detaljar for kvart steg i prosessen:
 
-* [Opprette virksomheitssystem](./virksys - opprette.html)
+Steg 1:
