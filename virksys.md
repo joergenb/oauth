@@ -24,6 +24,8 @@ graph LR;
 
   MP[Maskinporten]
   API[API]
+  AA[Altinn Autorisasjon]
+  
   PA --->|rettigheit|m
   PB --->|rettigheit|m
 
@@ -87,5 +89,4 @@ Virksomheitssystemet er altså mappa 1:1 til ein spesifikk Maskinporten-integras
 * Virksomheitssystem MÅ bruke ein spesifikk nøkkel til klient-autentisering i Maskinporten
   * dvs. vilkårleg virksomheitssertifikat er ikkje tillatt
   * men det er ikkje forbudt å bruke eitt - og berre eitt - virksomhetssertifikat
-* Det bør kanskje vere  mogeleg å inkludere fleire organisasjonar / rettar i samme virksomheitstoken for ytelesesoptimalisering
 * Merk at "scope-delegering" IKKJE kan støttast for denne typen Maskinporten-integrasjonar.
