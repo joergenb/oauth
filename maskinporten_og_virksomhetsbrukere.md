@@ -98,6 +98,9 @@ Ein vanleg maskinporten-token men utvida med ein respons-datamodell tilhøyrande
 }
 ```
 
+* Datakonsument slepp unna med eitt token-kall. slepp forholde seg til to token-utstedere.
+
+
 spm
 * er det verkeleg berre org og orgNummer som blir resultatet av ein tokenveksling?   
   * Eller er dømet i doc'en ufullstendig? https://docs.altinn.studio/api/scenarios/authentication/#the-altinn-jwt-access-token-output.
@@ -106,17 +109,16 @@ spm
 * vert det i praksis berre inkludert ein "peikar" i tokenet, som Altinn-API sjølv veit korleis skal autoriserast. Eigentleg ingen fin-korna autorisasjonsinfo i sjølve tokenet?
 
 #### omfang:
-- MP må støtte for "ruting" basert på auth-type, nytt kall mot Autorisasjon
-- MP kanskje innføre sjølvbetjeningsløysing for auth-types?  Eller kan me klare oss med eit scope for dette?
+- MP må innføre støtte for "ruting" basert på auth-type, nytt kall mot Autorisasjon
+- MP kanskje innføre sjølvbetjeningsløysing for auth-types?  Eller kan me klare oss med eit (eige) scope for dette?
 - Få(?) endringer i autorisasjon
 
 
 ## Alt 2: Maskinporten-integrasjon erstatter virksomhetsbruker
 
-Her blir virksomhetbrukere implementert som (maskinporten)-integrasjonar, og handlingar i Altinn medfører kall til sjølvbetjenings-APIet til Maskinporten.
+Her blir virksomhetbrukere implementert som (maskinporten)-integrasjonar, slik at opprett/endre/slett-handlingar i Altinn av virkbrukere medfører kall til sjølvbetjenings-APIet til Maskinporten.
 
-Når tilgangstyrer/hovedadministrator/innbygger sjølv er innlogga i Profil, kan vedkommande opprette eit "system" (finn evt. på nytt menneskevenleg namn)
-Det blir då oppretta ein ny integrasjon i Samarbeidsportalen, med asymmetrisk nøkkel, knytt til virksomheten, og med Altinn som `supplier`.  
+Når tilgangstyrer/hovedadministrator er innlogga i Profil, kan vedkommande opprette eit "virksomhetssystem" (finn på eitt nytt, betre menneskevenleg namn). Det blir då oppretta ein ny integrasjon i Samarbeidsportalen, med asymmetrisk nøkkel, knytt til virksomheten, og med Altinn som `supplier`.  
 
 api-klient = "Person-system"
 maskinporten="Maskin-system" ?
@@ -144,8 +146,9 @@ sequenceDiagram;
 omfang:
 * Samarbeidsportalen må støtte nøkkelgenerering og passord-utsending
 * Evt. utvidingar i metadata/klientmodell MP
-*
 
+
+spm
 
 * kva rolle fyller dagens virk.bruker.passord - trengs dette når vi har asym. nøkler?
 * kva rolle fyller API-KEY - trengs denne ?
@@ -155,6 +158,7 @@ omfang:
 * risiko for at sjølvbetjener i ei verksemd "ser" ein virk.bruker i Altinn og sletter denne uforvarande ?
 * nøkkelhandtering kan bli komplekst: forstår Tilgangsstyrer kva ei nøkkel-fil er og at den må haldast hemmeleg?  Alternativt kan Tilgangstyrar laste opp ein public-nøkkel som hen får frå systemadministrator, men er dèt forståeleg?
   * bør helst unngå å opne for bruk av client_secret
+*betyr at alle org.er
 
 
 ### Variant 2b: Leverandør-oppretta "virksomhetsbrukere"
@@ -234,8 +238,11 @@ Alt 2b-varianten gjev god teknisk og operasjonell sikkerheit. Vidarefører den s
 
 ### Spm:
 
+* kor mange virksomheiter har virk.brukere ?
+* kor mange av desse har eigne integrasjonar mot altinn, og kor mange bruker systemleverandør ?
+
 token-veksling for MP:
-* er det nokon tilfelle der klienten må gjenta
+* er det nokon tilfelle der klienten må gjenta token-veksling for å "oppgradere", eller "følge" ein dialog (slik som feks stega/handlingar i Dialogporten)
 * er det tilfelle med "instans-spesifikk-veksling".
 * Har de tenkt på / sett behov for utvidingar av token-exange-endepunkt?  t.d. ulike ulike responser alt etter mål-API (altinn-app-spesifike token)
 
