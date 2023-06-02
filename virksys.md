@@ -8,25 +8,31 @@ Eit virksomheitssystem er ein spesiell type Maskinporten-integrasjon som er tilg
 
 ```mermaid
 graph LR;
- 
-  subgraph H [Hjelper]
+
     direction RL
-    m[Kundemappe]
-    adm[/Kunde-administor\]
-  end
-  subgraph SL [Systemleverandør]
-     VS[Virksomheitsystem]
-  end
+
+   PA[Part A]
+   PB[Part B]
+
+    subgraph H [Hjelper]
+        direction RL
+        m[Kundemappe]
+    end
+    subgraph SL [Systemleverandør]
+       VS[Virksomheitsystem]
+    end
+
   MP[Maskinporten]
   API[API]
+  PA --->|rettigheit|m
+  PB --->|rettigheit|m
 
-  Part --->|Delegerer rettighet|H
-  adm -->|videre-delegerer|m
-  H -->|inngår avtale|SL
+  H --->|inngår avtale|SL
 
   m --->|peiker på|VS
 
-  VS ---|henter token|MP
+  VS --->|henter token|MP
+  MP ---|sjekker|AA
 
   VS ---|kaller|API
 
