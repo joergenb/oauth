@@ -1,4 +1,4 @@
-# Virksomhetssystem ber om token
+# 4: Virksomhetssystem ber om token
 
 Me ser for oss å støtte to mønster:
 
@@ -7,7 +7,7 @@ Me ser for oss å støtte to mønster:
 
 ## Virksomheitstoken
 
-Virksomheitstoken er ein ny, "ferdigbakt" tokentype, som fortel basis autorisasjonsinformasjon om kva rettar virksomheitssystemet har fått frå ein Part (som oftast gjennom ein "hjelper")
+Virksomheitstoken er ein ny, "ferdigbakt" tokentype, som inneheld basis autorisasjonsinformasjon om kva rettar virksomheitssystemet har fått frå ein Part (som oftast gjennom ein "hjelper")
 
 Flyten er slik:
 
@@ -18,18 +18,16 @@ sequenceDiagram;
   participant AA as Altinn Autorisasjon
   participant API
 
-  VS->>MP: førespør token (part, hjelper, rettigheit)
+  VS->>MP: førespør token (part, rettigheit?, hjelper?)
   note over MP: virksomhetsautentisering + scope-validering
 
-  MP->>AA: har virksys. tilgang til RETTIGHEIT for PART ?
+  MP->>AA: kva RETTIGHEITER har virksys for PART ?<br/>evt: har virksys. tilgang til RETTIGHEIT for PART ?  <br/>(evt. via HJELPER)
   note over AA: Autorisasjonbeslutning
   AA->>MP: ja
   MP->>VS: virksomheitstoken
   VS->>API: førespør data med virksomheitstoken
   API->>VS:  returner data
 ```
-
-
 
 
 Virksomheitssystemet må spesifisere at det ynskjer eit slikt type token ved å oppgje RAR-typen `urn:altinn:virksys` i requesten, og vidare kva **part** som token-requesten gjeld, typisk:
@@ -47,7 +45,7 @@ Virksomheitssystemet må spesifisere at det ynskjer eit slikt type token ved å 
   ]
 ```
 
-Maskinporten vil så spørje Altinn3 om dette representasjonsforholdet er tilatt, og dersom "ja", utstede eit virksomheitstoken, som er nesten identisk med requesten, men berika då med rettigheit og hjelper (for sporingsformål hjå api-tilbydar):
+Maskinporten vil så spørje Altinn3 om dette representasjonsforholdet er tilatt, og dersom "ja", utstede eit virksomheitstoken, som er nesten identisk med requesten, men berika då med rettigheit(er) og hjelper (for sporingsformål hjå api-tilbydar):
 
 
 ```
@@ -69,12 +67,12 @@ Maskinporten vil så spørje Altinn3 om dette representasjonsforholdet er tilatt
 
 TODO:  Datamodell for request og respons må drøftast nærare.
 
-MERK:  Systemleverandør kan IKKJE videre-delegere API-scopet til  driftsleverandør/databehandlar for denne token-typen, sidan klienten då er registrert på Driftsleverandør og det er ingen kobling til Systemleverandør.
+Det bør vere mogeleg for virksomheitssystemet å spørje både heile spissa på kombinasjonen part-rettigheit-hjelper" eller "åpent", dvs "kva rettigheiter har eg pva. denne parten", eller "gje meg X  partar som eg har rettigheit R for".
 
 
 ## Tynne token
 
-Tynne token er heilt ordinære Maskinporten-tokens.   Men sidan me føl konvensjonen om at identifikator for virksomheitssystemet = client_id i Maskinporten,  so kan API-tilbydar ved mottak av tokenet gjere eit oppslag mot Altinn Autorisasjon for å sjekke om virksomheitssystemet er autorisert for aktuell handling.  Dette openar for meir komplekse autorisasjons-spørringar enn standard-tokenet kan (og bør) støtte.
+Tynne token er heilt ordinære Maskinporten-tokens.   Men sidan me føl konvensjonen om at identifikator for virksomheitssystemet = client_id i Maskinporten,  so kan API-tilbydar ved mottak av tokenet gjere eit oppslag mot Altinn Autorisasjon for å sjekke om virksomheitssystemet er autorisert for aktuell handling.  Dette openar for at API-tilbydar kan sende meir komplekse autorisasjons-spørringar enn det standard-tokenet kan (og bør) støtte.
 
 
 Flyten er slik:
@@ -96,3 +94,9 @@ sequenceDiagram;
 
   API->>VS:  returner data
 ```
+
+### Andre eigenskapar:
+
+* MERK:  Systemleverandør kan IKKJE videre-delegere API-scopet til  driftsleverandør/databehandlar for denne token-typen, sidan klienten då er registrert på Driftsleverandør og det er ingen kobling til Systemleverandør.
+
+* Det bør kanskje vere  mogeleg å inkludere fleire organisasjonar / rettar i samme virksomheitstoken for å unngå for mange nettverkskall. Dog risiko for veldig store tokens som kan gje problem med HTTP header størrelse, kan evt. vurder om CWT kan støttast i tillegg til JWT.
