@@ -47,7 +47,7 @@ Virksomheitssystemet er altså mappa 1:1 til ein spesifikk Maskinporten-integras
 
 1. Ein Systemleverandør tilbyr ulike fagsystem for den profesjonelle marknaden  (T.d "Turboskatt" og "Turbo-MVA") for rekneskapsbyråer.  Systemleverandøren oppretter desse som virksomheitssystem gjennom Altinn, og gir dei naudsynte API-tilgangar som Systemleverandøren har tilgang til (vanlege oauth2 maskinporten scopes, t.d `skatteetaten:mva`).
 
-Sjå [her for detaljert prosess](virksys-opprette.html).
+Sjå [her for detaljert prosess](virksys-opprette.md).
 
 2. Eit regnskapsbyrå (="hjelper") ynskjer so å ta i bruk Turboskatt for eit subsett av eigne kundar ("part").  Rekneskapesbyrået oppretter ei eiga "kundemappe" i Altinn for dette (t.d "Landbruks-seksjonen", "VVS-kundar"). Ein bemyndiga hjå regnskapsbyrået koblar so kundemappa til virksomheitssystemet til Systemleverandøren. I denne prosessen vert det vist ei "samtykke"-side som informerer regnskapsbyrået om kva koblinga innebærer. (Systemleverandøren kan ogso "be om tilgang" og førehands-opprette ei kundemappe for regnskapsbyrået, dersom dette er meir hensiktsmessig).
 
@@ -60,7 +60,7 @@ Sjå [her for detaljert prosess](virksys-opprette.html).
     * **Tynne token**. Dette er eit vanleg Maskinporten-token der berre id'en på virksomheitssystemet inngår. Når det aktuelle APIet mottek tokenet, må APIet sjølv gjere eit kall til Altinn Autorisasjon for spørje om virksomheitssystemet har lov til å utføre aktuell API-handling.
     Dette mønsteret er mest passande der legacy-systemer går over til å bruke virksomheitssystem, eller der autorisasjonsreglane er sopassa komplekse at standard "virksomheitstoken" ikkje er tilstrekkeleg.
 
-    Sjå [her for detaljert prosess](virksys-token.html).
+    Sjå [her for detaljert prosess](virksys-token.md).
 
 ### Fleksibilitet
 
