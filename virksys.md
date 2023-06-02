@@ -89,4 +89,4 @@ Virksomheitsystemet er altså mappa 1:1 til ein spesifikk Maskinporten-integrasj
 
 Klikk på lenke for å sjå detaljar for kvart steg i prosessen:
 
-* [Opprette virksomheitssystem](virksys - opprette.html)
+* [Opprette virksomheitssystem](./virksys - opprette.html)
