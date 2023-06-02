@@ -54,6 +54,7 @@ Maskinporten vil så spørje Altinn3 om dette representasjonsforholdet er tilatt
 {
   "iss": "https://maskinporten.no/",
   "client_id": <client_id for virksys.>,
+  client_name": "Turboskatt for Øvre Toten Regnskapstjenester"
 
   "scope": "skatteetaten:mva"
 
@@ -66,7 +67,7 @@ Maskinporten vil så spørje Altinn3 om dette representasjonsforholdet er tilatt
   ]
 ```
 
-Datamodell for request og respons må drøftast nærare.
+TODO:  Datamodell for request og respons må drøftast nærare.
 
 MERK:  Systemleverandør kan IKKJE videre-delegere API-scopet til  driftsleverandør/databehandlar for denne token-typen, sidan klienten då er registrert på Driftsleverandør og det er ingen kobling til Systemleverandør.
 

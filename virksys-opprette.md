@@ -26,6 +26,10 @@ Authorization: Bearer <token utsted til Altinn med idporten:dcr.write og idporte
 }
 ```
 
+Maskinporten-sjølvbetjenings-API vil svare med ein tildelt `client_id`, dette blir då identifikatoren til virksomheitssystemet.  
+
+Normalt anbefalar me ikkje å bruke client_id til tilgangstyring hjå API-tilbydar, då dette claimet ihht spec er eit forhold berre mellom IDP og klient-organisasjonen. Organisasjonen må kunne endre sine klienter ("orden i eige hus") utan at API-tilbydarar skal bli påverka.  Men i dette tilfellet so snakkar me om eit meir "lukka" økosystem, der API-tilbydarar uansett må forholde seg til Altinn sin Autorisasjonsmodell, samt at vedlikehaldet av maskinporten-integrasjonane skjer gjennom Altinn, og me vurderer det då som føremålsteneleg å nytte client_id på denne måten. 
+
 Normalt vil ein tradisjonell Maskinporten-klient oppretta på denne måten tillate klient-autentisering med alle virksomheitssertifikat tilhøyrande konsument-organisasjonen.  For å unngå slik "universalnøkkel"-problematikk, då me forventar mange slike system-registreringar, tilpassar me Maskinporten slik at det - for `integration_type=altinn_virksys` -  MÅ vere registrert ein asymmetrisk nøkkel på klienten før den kan brukast.
 
 Her kan me sjå for oss to alternativ:
