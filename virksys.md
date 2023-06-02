@@ -25,7 +25,7 @@ graph LR;
   MP[Maskinporten]
   API[API]
   AA[Altinn Autorisasjon]
-  
+
   PA --->|rettigheit|m
   PB --->|rettigheit|m
 
@@ -68,7 +68,7 @@ Virksomheitssystemet er altså mappa 1:1 til ein spesifikk Maskinporten-integras
 * Dersom Kunden (Reidun Røyrleggjar) vil bytte regnskapsbyrå frå Øvre Toten Rekneskapstenester til Nedre Toten Rekneskapstenester, so endrar ho anten i Enhetsregisteret, eller bytter delegeringa av "R1" i Altinn.  Då kaskade-slettast retten frå kundemappa til Øvre Toten, og dei kan ikkje lenger få tokens.
   Kunde-ansvarleg hjå Nedre Toten må - anten manuelt eller automatisert gjennom "innsalgsprosessen" -  videre-delegere rettane til eiga kundemappe.
 
-* Kundemappe-dimensjonen gjer at Rekneskapsbyrået kan bruke ulike systemleverandørar til same type API-tilgang  (Rekneskapsføraren som jobbar med VVS-kundane kan bruke TurboSkatt, medan dei som er i landsbruksavdelinga brukar ein SW frå Landbrukssystemer AS)
+* Kundemappe-dimensjonen gjer at Rekneskapsbyrået kan bruke ulike systemleverandørar til same type API-tilgang for ulike kundegrupper (Rekneskapsføraren som jobbar med VVS-kundane kan bruke TurboSkatt, medan dei som er i landsbruksavdelinga brukar ein SW frå Landbrukssystemer AS)
 * Regnskapsbyrå kan opprette so mange kundemapper dei finn føremålsteneleg.
 
 
