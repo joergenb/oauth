@@ -45,8 +45,8 @@ Virksomheitssystemet er altså mappa 1:1 til ein spesifikk Maskinporten-integras
 
 # Bruker-reise
 
-1. Ein Systemleverandør tilbyr ulike fagsystem for den profesjonelle marknaden  (T.d "Turboskatt" og "Turbo-MVA") for rekneskapsbyråer.  Systemleverandøren oppretter desse som virksomheitssystem gjennom Altinn, og gir dei naudsynte API-tilgangar som Systemleverandøren har tilgang til (vanlege oauth2 maskinporten scopes, t.d `skatteetaten:mva`)
-[Klikk her for å sjå detaljert prosess](./virksys - opprette.html).
+1. Ein Systemleverandør tilbyr ulike fagsystem for den profesjonelle marknaden  (T.d "Turboskatt" og "Turbo-MVA") for rekneskapsbyråer.  Systemleverandøren oppretter desse som virksomheitssystem gjennom Altinn, og gir dei naudsynte API-tilgangar som Systemleverandøren har tilgang til (vanlege oauth2 maskinporten scopes, t.d `skatteetaten:mva`).
+Sjå [her for detaljert prosess]('virksys-opprette.html').
 
 2. Eit regnskapsbyrå (="hjelper") ynskjer so å ta i bruk Turboskatt for eit subsett av eigne kundar ("part").  Rekneskapesbyrået oppretter ei eiga "kundemappe" i Altinn for dette (t.d "Landbruks-seksjonen", "VVS-kundar"). Ein bemyndiga hjå regnskapsbyrået koblar so kundemappa til virksomheitssystemet til Systemleverandøren. I denne prosessen vert det vist ei "samtykke"-side som informerer regnskapsbyrået om kva koblinga innebærer. (Systemleverandøren kan ogso "be om tilgang" og førehands-opprette ei kundemappe for regnskapsbyrået, dersom dette er meir hensiktsmessig).
 
