@@ -98,5 +98,6 @@ sequenceDiagram;
 ### Andre eigenskapar:
 
 * MERK:  Systemleverandør kan IKKJE videre-delegere API-scopet til  driftsleverandør/databehandlar for denne token-typen, sidan klienten då er registrert på Driftsleverandør og det er ingen kobling til Systemleverandør.
+    * Dersom Visma har fått tildelt skatteetaten:mva og delegerer dette vidare til Basefarm, betyr det samtundes at Basefarm skal kunne opptre som ALLE Visma sine virksomheitssystem?
 
 * Det bør kanskje vere  mogeleg å inkludere fleire organisasjonar / rettar i samme virksomheitstoken for å unngå for mange nettverkskall. Dog risiko for veldig store tokens som kan gje problem med HTTP header størrelse, kan evt. vurder om CWT kan støttast i tillegg til JWT.
