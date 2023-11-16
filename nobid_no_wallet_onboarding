@@ -1,5 +1,7 @@
+
+
 ```mermaid
-sequenceDiagram
+sequenceDiagram;
 
    actor U as user
    participant W as wallet
