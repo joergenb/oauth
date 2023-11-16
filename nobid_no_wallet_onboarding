@@ -1,3 +1,4 @@
+```mermaid
 sequenceDiagram
 
    actor U as user
@@ -28,22 +29,23 @@ sequenceDiagram
    end
    
    W-->>B: initiate redirect
-   B->>I: /authorize  (scope=eudi:eu.europa.ec.eudiw.pid.no.1)
+   B->>I: /authorize  (scope=eudiw:eu.europa.ec.eudiw.pid.no.1)
    
-   note over U,I: user authenticates (and consents, if relevant)
+   note over U,I: user authenticates and consents
  
    I->>B: redirect with authorization code
    B->>W: claimed url with code
    
-   W->>+I: /token (code, ?key attestation, ?dPOP proof)
+   W->>+I: /token (code, key attestation JWT, ?DPoP proof)
    opt If attestation-based client-auth was used 
      I-->>+T: verify attestation was signed by a trusted wallet (backend)
      T-->>-I: OK
    end
    I-->>-W: access_token 
    
-   W->>+C: /credentials request (access-token, ?key proof, ?dpop proof)
+   W->>+C: /credentials request (access-token, key proof, ?DPoP proof)
    C->>+F: lookup (fødselsnummer)
    F-->>-C: persondata
    C->>C: build the VC / mdoc
    C-->>-W: return the PID
+```
