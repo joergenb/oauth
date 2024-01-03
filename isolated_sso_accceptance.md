@@ -17,7 +17,7 @@ All test steps must happen before any session inactity timers expire
 ```
 GIVEN user is logged in to service A 
 WHEN the user tries to log in to service B 
-THEN the user must be automatically logged in to service B needing to re-authenticate
+THEN the user must be automatically logged in to service B without needing to re-authenticate
 ```
 
 2:
