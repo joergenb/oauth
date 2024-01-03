@@ -1,4 +1,4 @@
-# Acceptance criterias for "isolated sso-session clients"
+# Acceptance criterias for "isolated sso-session" clients
 
 ### Actors:
 
