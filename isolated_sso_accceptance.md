@@ -13,9 +13,12 @@ All test steps must happen before any session inactity timers expire
 
 ### Basic behavior for normal, common SSO-sessions:
 
+```
 GIVEN user is logged in to service A 
 WHEN the user tries to log in to service B 
 THEN the user must be automatically logged in to service B needing to re-authenticate
+```
+
 
 GIVEN user is logged in at level "significant" on service A
 WHEN the user tries to log in at level "high" on service B
