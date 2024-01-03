@@ -2,8 +2,8 @@
 
 ### Actors:
 
-- A: a client participanting in the joint/common circle-of-trust 
-- B: a client participanting in the joint/common circle-of-trust 
+- A: a client participating in the joint/common circle-of-trust 
+- B: a client participating in the joint/common circle-of-trust 
 - I1: a client flagged for isolated-sso functionality  
 - I2: a client flagged for isolated-sso functionality
 
@@ -22,7 +22,7 @@ THEN the user must be automatically logged in to service B without needing to re
 
 2: normal session loa upgrade
 ```
-GIVEN user is logged in at level "significant" on service A
+GIVEN user is logged in at level "substantial" on service A
 WHEN the user tries to log in at level "high" on service B
 THEN the eID selector at high level must be displayed and the user must re-authenticate
 ```
@@ -46,7 +46,7 @@ THEN the eID selector must be displayed and the user must re-authenticate
 
 5:  (enforce session upgrade also within own SSO session):
 ```
-GITT user is logged in at level "significant" on service I1
+GITT user is logged in at level "substantial" on service I1
 WHEN the user tries to log in at level "high" on service I1
 THEN the eID selector on high level must be displayed and the user must re-authenicate
 ```
