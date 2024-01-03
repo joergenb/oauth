@@ -87,3 +87,14 @@ WHEN the user tries to log in to service B
 THEN the user will be logged in automatically to service B
 ```
 
+### Logout is global
+
+10:
+```
+GIVEN user is logged in to service A
+GIVEN user is logged in to service B
+GIVEN user is logged in to service I1
+WHEN the user logs out from a service (A,B,I1)
+THEN the user must also be logged out of all services
+AND  the user must re-authenticate at the next login attempt
+```
