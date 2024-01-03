@@ -3,7 +3,7 @@
 ### Actors:
 
 - A: a client participanting in the joint/common circle-of-trust 
-- A: a client participanting in the joint/common circle-of-trust 
+- B: a client participanting in the joint/common circle-of-trust 
 - I1: a client flagged for isolated-sso functionality  
 - I2: a client flagged for isolated-sso functionality
 
