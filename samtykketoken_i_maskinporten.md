@@ -47,22 +47,12 @@ Følgjande scope er naudsynt for å få ut samtykketokens (dvs. gjenbruk av dage
 |-|-|
 |scope|Må vere `altinn:consenttokens` |
 
-I tilegg trengs det innførast samtykke-spesifikke element i førespurnaden.   Her ser vi for oss å anten referert til samtykke-instansen vi ein identifikator (som dagens code), eller "indirekte" via oppslag på parts- og tjenstekodeforhold, dvs. anten:
+I tilegg trengs det innførast samtykke-spesifikke element i førespurnaden.  
 
 |claim|skildring|
 |-|-|
 |consent_id|Ein unik identifikator på sjølve samtykket.  (Dette vart tidlegare kalla `AuthorizationCode`, men endrar namn for å unngå forvirring med standard oauth-claim)|
 
-eller:
-
-|claim|skildring|
-|-|-|
-|offered_by|Fødselsnummer til sluttbruker. |
-|covered_by|Orgnummer til datakonsument  (TRENG ME DENNE, KUNNE VORE PLUKKA FRÅ KLIENTAUTNETISERING/delegering?|
-|service_code| Tjenestekode som samtykket skal gjelde for. Døme: `"4629"` |
-|service_edition| Tjenesteutgave under tjenestekoden. Døme: `"2"` |
-
-Den siste her er noko meir generisk, t.d. viss datakonsument har mista id'en til samtykke-instansen, kan dei nytta grantet som ein oppslagsmekanisme for å sjekka om dei har framleis har samtykke - og kva dette omfattar -  frå brukaren.
 
 #### Bruk av databehandler
 
