@@ -171,8 +171,17 @@ Samtykke-informasjonen er modifisert frå dagens samtykketoken, for å vere ihht
 ```
 
 
+Dersom samtykket ikkje er inngått eller trukket tilbake kan responsen bli slik:
+```
+"authorization_details": [
+    {
+      "type":"urn:altinn:samtykke",
+      "consent_id": "c7dbe642-0fc1-4c3b-8959-8a92e3e1f17d",
+      "status": "OPEN"
+    }
+]
+```
 
-# Prosess 1:  Innbyggar inngår samtykke
 
 
-TBD
+
