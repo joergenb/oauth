@@ -1,6 +1,6 @@
 Mønstre
 
-```
+```mermaid
 graph LR
 
 subgraph C [Konsument]
