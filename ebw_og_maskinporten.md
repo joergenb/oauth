@@ -68,7 +68,7 @@ utfordringar:
 
 ## 2: APIer basert på bevis-presentasjon 
 
-Variant der fagsystemet Tenesteeigar har eit eksisterande API som er sikra med Maskinporten, ynskjer å kunne dele også med "virksomhetslommebok".
+Her har Maskinporten rolla som "utsteder av tilgangsbevis", som so kan stolast på av Tenesteeigars API.
 
 ```mermaid
 graph LR
@@ -93,7 +93,7 @@ MP -->|2.sjekker om org. bruker lommebok| EDD
 MP -->|3. utsteder 'tilgangsbevis'| BW1
 BW1 ------>|4. presenterer bevis|API
 ```
-Her har Maskinporten rolla som "utsteder av tilgangsbevis", som so kan stolast på av Tenesteeigars API.
+
 
 Men kvifor vil tenesteeigar gå omvegen om Maskinporten her,  kan dei ikkje berre utstede tilgangsbevis direkte ?
 
