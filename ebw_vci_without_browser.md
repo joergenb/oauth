@@ -42,6 +42,11 @@ Comparing against EUDIW, this draft proposes the following changes:
 
 # Example
 
+TBD  MÅ PRØVE Å FORENKLE.   BURDE VERE GODT NOK Å BERRE SENDE EBWOID MED SIGNATUR SOM BEVISER HOLDER BINDING.
+
+
+
+If attestation-based client authentication is used with WUAs, a token request might look
 token request
 ```
 POST /token
@@ -54,9 +59,12 @@ grant_type=urn:eu:ebw
 where the JWT looks like:
 ```
 {
- "typ":
- "x5c": <E
+ "typ": "oauth-client-attestation+jwt",
 }.{
+ "sub": "https://wallet-provider.com/an_ebw_customer"
+ "cnf": <the ebwoid key>
+ 
+ 
 }.<signature, by ebwoid key>
 ```
 
@@ -64,6 +72,8 @@ where the JWT looks like:
 # More details 
 
 - The Oauth2 and OpenID protocols have already well-established features for machine-to-machine authorization, with large deployed ecosystems within e.x. OpenBanking and eHealth ecosystems around the world.   These features can easily be applied also to VP and VCI, yielding simplified protocols, which is what we propose in this draft.
+
+- The feature set selected for FAPI should be guidance, as they have passed rigorous security analysis by researchers, ex. by using formal methods.
 
 - There is a need to agree upon high-level requirements for the EBWOID and the WUA for credential issuance, as this will affect protocol design.  How do the EBW authenticate itself ?
    1. Only use the EBWOID.  Ie: Issuers will implicitly trust that EBWOIDs never leaks from a geniune EBW (or dont care) and cannot know that the credential they issue is stored in a genuine EBW. 
