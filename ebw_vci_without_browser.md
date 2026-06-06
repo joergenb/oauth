@@ -57,10 +57,10 @@ The wallet authenticates by presenting its EBWOID to the Issuer.
 POST /token
 
 grant_type=verifiable_presentation
-&scope=requsted_credentials
+&scope=reqeusted_credentials
 &vp_token=["eyJhbGciOiJSU...", "other presentations", ...]
 ```
-Here, a new grant_type is introduced, profiling which claims that must be in the request. The current proposal only intoduces a `vp_token` claim, where the wallet must include the presentation of credential(s) needed to satisfy issuer requirements. Rules for `vp_token` should be identical to its use in Openid4VP. 
+Here, a new grant_type is introduced, profiling which claims that must be in the request. The current proposal only intoduces a `vp_token` claim, where the wallet must include the presentation of credential(s) needed to satisfy issuer requirements. Processing rules for `vp_token` should be identical to its use in Openid4VP. 
 
 In the normal case, the vp_token will contain an EBWOID in SD-JWT VC-format, including a key binding JWT which demonstrates that the Holder has proof-of-possession of the EBWOID key material.
 
