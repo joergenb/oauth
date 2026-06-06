@@ -78,7 +78,8 @@ Another option might be to leverage Wallet-Relying Parties Access Certificates. 
 
 - The Oauth2 and OpenID protocols have already well-established features for machine-to-machine authorization, with large deployed ecosystems within e.x. OpenBanking and eHealth ecosystems around the world.   These features can easily be applied also to VP and VCI, yielding simplified protocols, which is what we propose in this draft.
 
-- The feature set selected for FAPI should be guidance, as they have passed rigorous security analysis by researchers, ex. by using formal methods.
+- This proposal avoids workarounds seen in the wild trying to automate (and side-step...) the end-user consent and sole control happening in the browser.  Instead, we get a dedicated, simpler protocol variant for automated issuance.  This also gives Credential Issuers the to force business wallets to involve a human in scenarios where this is required, for instance for issueing certain high-value credentials.
+  
 
 # Open issues:
 
