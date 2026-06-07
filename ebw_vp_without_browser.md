@@ -30,59 +30,37 @@ sequenceDiagram
     EBWA-->>-EBWB: presentation (vp_token)
 ```
 
-Using this approach we can have the same mental model,  as well as protocol exchange, for issuing credentials both to Identity and Business wallets.
-
 Comparing against EUDIW, this draft proposes the following changes:
-- the authorization endpoint and credential offers are not used as they are not needed
-- we foresee no or minimal changes to the credential endpoint
-- the JWT that the EBW use to authenticate itself towards the token endpoint must be profiled/standardized
+- browser redirects and/or the DC API are not used as they are not needed
+- business wallet instances can publish their [client metadata on a well-known endpoint](https://datatracker.ietf.org/doc/draft-ietf-oauth-client-id-metadata-document/) and signing keys.  The EBWOID public key could be included in the metadata.
 
 # Variant 2: Wallet-initiated flow
 
-# Authentication of the wallet
+This flow is simply the reverse of variant 1; ie EBW A sends a presentation directly to EBW B.
 
-The main open question in this proposal is how the business wallet instance authenicates itself towards the issuer.  Here, eventually, guidance from the coming Regulation and implementing acts needs to be considered, in order to create high-level requirement in a coming ARF, which then can be used for protocol design.
-
-Nevertheless, some options are discussed below:
-
-### Option 1: Present the EBWOID
-
-The wallet authenticates by presenting its EBWOID to the Issuer. 
-```
-POST /token
-
-grant_type=verifiable_presentation
-&scope=reqeusted_credentials
-&vp_token=["eyJhbGciOiJSU...", "other presentations", ...]
-```
-Here, a new grant_type is introduced, profiling which claims that must be in the request. The current proposal only intoduces a `vp_token` claim, where the wallet must include the presentation of credential(s) needed to satisfy issuer requirements. Processing rules for `vp_token` should be identical to its use in Openid4VP. 
-
-In the normal case, the vp_token will contain an EBWOID in SD-JWT VC-format, including a key binding JWT which demonstrates that the Holder has proof-of-possession of the EBWOID key material.
-
-### Option 2: WUA
-
-Here, the Wallet instance includes a WUA from the Wallet Provider, attesting that the request comes from a valid EBW-instance. The request should also identify the EBW owner, which could be either by reference, or by also  proving posession of the EBWOID.
-
-### Option 3: Using WRPAC
-
-Another option might be to leverage Wallet-Relying Parties Access Certificates.  As the EBW probably need to be provisioned with WRPACs to act as a Verifier during VP-flows, it can then be beneficial to also use the WRPAC for authentication when the EBW is acting as a Holder.
+This variant could alternatively be solved by adding an initial step to Variant A, in which EBW A firsts asks EBW B to "please, can you ask me to present a credential".  
 
 
+# Authentication of the verifier
 
-# Motivation:
+### Option 1: Using WRPAC
 
-- The Oauth2 and OpenID protocols have already well-established features for machine-to-machine authorization, with large deployed ecosystems within e.x. OpenBanking and eHealth ecosystems around the world.   These features can easily be applied also to VP and VCI, yielding simplified protocols, which is what we propose in this draft.
+Here, EBW instances uses a WRPAC for authenticaing the presentation request, by selecting `x509_hash` as Client Identifier Prefix, similar to normal EUDIW operation.   It is TBD if WRPRC (registration certififates) are also needed, depending on the coming Regulation, but we think they can be skipped as there is not personal data requested and no need to registrer the intent according to GDPR.
 
-- This proposal avoids workarounds seen in the wild trying to automate (and side-step...) the end-user consent and sole control happening in the browser.  Instead, we get a dedicated, simpler protocol variant for automated issuance.  This also gives Credential Issuers the to force business wallets to involve a human in scenarios where this is required, for instance for issueing certain high-value credentials.
-  
+In this option, the EBWOID is not used. 
+
+### Option 2: Using EBWOID directly
+
+This may be a simpler option because EBW instances doesn't need to also get WRPACs.  The authorization request is signed with the EBWOID key. 
+
+The Client Identifier Prefix could be `verifier_attestation`.  Note that this option place some requirements on the EBWOIDs: they must be in SD-JWT format, and some claims should be non-selectively disclosurable, namely `sub` (which should be set to the EU-ID, and used as original client identifier), `iss` (which is a qualified EAA provider) and `cnf` for the holder binding.   Also; how `iss` values should correspond to the Trust Services (QEAA-providers issuing EBWOID) on the Trust List must be solved. 
+
+### Option 3: Wallet-provider attestation
+
+Same as option 2, only that instead of EBWOID, we use an attestation signed by the Business Wallet-provider.  Trust List resolution might be simpler here, as Wallet Providers shall be put on the new ETSI 119 602 (json-based) trust lists and not ETSI 119 612 (xml, already used by eidas1). Thus, it could potentially be easier to extend / profile ETSI 119 602 to also include `iss` values of Trusted Entities, in addidition to signing keys.
+
+
 
 # Open issues:
 
 - Since all EBWs are online services with resolvable DNS (no mobile app), it seems beneficial that they also host their own client metadata, so that the other party can query their capabilities before initiating protocol exchange.
-- 
-
-- **Holder binding:**  For EUDIW, there is a significant complexity coming from privacy protections, where every credential is issued batches where each credential issue must have unique key material.  For EBW, can we instead bind all credentials to the same EBWOID key ?  Do we need batch issuance ?
-
-- We assume that WRPAC and WRPRC are used by the Issuer in the same manner as for EUDIW (ie: put WRPRC inside metadata and sign it using WRPAC)
-
-  
