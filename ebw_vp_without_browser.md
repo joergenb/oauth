@@ -15,27 +15,19 @@ There are 2 variants of this scenario to consider:
 This variant is similar to regular VP, which is always Verifier-initiated. Ie: EBW B asks EBW A for a credential.
 
 1. The Business Wallet B fetches the client metadata of the Business Wallet A from the well-known endpoint, based on `iss`.
-2. The Business Wallet B creates a presentation request  makes a token request toward the token endpoint.  In this request the business wallet:
-   - Authenticates itself using the EBWOID
-   - Identifies the requested credential(s), ex. based on metadata from step #1
-   - Optionally includes a WUA from the EBW-provider to prove that the EBWOID resides in an authentic EBW.
-3. The Credential Issuer validates the request and returns an access token.
-4. The Business Wallet makes a credential request to the credential endpoint.
-5. The Credential Issuer returns the credential(s).
+2. The Business Wallet B creates a presentation request (ie. authorization request) towards A's authorization endpoint.
+3. Business Wallet A validates the request and returns a presentation response (vp_token)
 
 The flow is a simplied openid4vp flow where the end-user/browser parts are omitted, since there is no need to ensure that a human is in the loop to collect consent and exercise "sole control" according to eIDAS2.
 
 ```mermaid
 sequenceDiagram
-    participant EBW as Business Wallet
-    participant CI as Credential Issuer
-    participant AS as Authorization Server
-    EBW->>+CI: get metadata
-    CI-->>-EBW: response
-    EBW->>+AS: token request
-    AS-->>-EBW: response
-    EBW->>+CI: credential request
-    CI-->>-EBW: credential(s)
+    participant EBWA as Business Wallet A
+    participant EBWB as Business Wallet B
+    EBWB->>+EBWA: get metadata
+    EBWA-->>-EBWB: response
+    EBWB->>+EBWA: presentation request
+    EBWA-->>-EBWB: presentation (vp_token)
 ```
 
 Using this approach we can have the same mental model,  as well as protocol exchange, for issuing credentials both to Identity and Business wallets.
