@@ -12,18 +12,18 @@ There are 2 variants of this scenario to consider:
 
 # Variant 1: Verifier-initiated flow
 
-This variant is similar to regular VP, which is always Verifier-initiated. Ie: EBW B asks EBW A for a credential.
+This variant is similar to regular VP, which is always Verifier-initiated. Ie: EBW B acts as Verifier and asks EBW A acting as Holder for a credential.
 
-1. The Business Wallet B fetches the client metadata of the Business Wallet A from the well-known endpoint, based on `iss`.
-2. The Business Wallet B creates a presentation request (ie. authorization request) towards A's authorization endpoint.
-3. Business Wallet A validates the request and returns a presentation response (vp_token)
+1. Verifier fetches the client metadata of the Holder EBW from the well-known endpoint, based on `iss`.
+2. Verifier creates a presentation request (ie. authorization request) towards Holder EBW's authorization endpoint.
+3. Holder EBW validates the request and returns a presentation response (vp_token)
 
 The flow is a simplied openid4vp flow where the end-user/browser parts are omitted, since there is no need to ensure that a human is in the loop to collect consent and exercise "sole control" according to eIDAS2.
 
 ```mermaid
 sequenceDiagram
-    participant EBWA as Business Wallet A
-    participant EBWB as Business Wallet B
+    participant EBWA as Business Wallet A (Holder)
+    participant EBWB as Business Wallet B (Verifier)
     EBWB->>+EBWA: get metadata
     EBWA-->>-EBWB: response
     EBWB->>+EBWA: presentation request
@@ -32,13 +32,13 @@ sequenceDiagram
 
 Comparing against EUDIW, this draft proposes the following changes:
 - browser redirects and/or the DC API are not used as they are not needed
-- business wallet instances can publish their [client metadata on a well-known endpoint](https://datatracker.ietf.org/doc/draft-ietf-oauth-client-id-metadata-document/) and signing keys.  The EBWOID public key could be included in the metadata.
+- business wallet instances should publish their [client metadata on a well-known endpoint](https://datatracker.ietf.org/doc/draft-ietf-oauth-client-id-metadata-document/), including signing keys.  The EBWOID public key could be included in the metadata.
 
 # Variant 2: Wallet-initiated flow
 
-This flow is simply the reverse of variant 1; ie EBW A sends a presentation directly to EBW B.
+This flow is simply the reverse of variant 1; ie Holder EBW A sends a presentation directly to the Verifier EBW B.
 
-This variant could alternatively be solved by adding an initial step to Variant A, in which EBW A firsts asks EBW B to "please, can you ask me to present a credential".  
+This variant could alternatively be solved by adding an initial step to Variant A, in which Holder EBW A firsts asks Verifier EBW B to "please, can you ask me to present this credential".  
 
 
 # Authentication of the verifier
@@ -46,6 +46,8 @@ This variant could alternatively be solved by adding an initial step to Variant 
 ### Option 1: Using WRPAC
 
 Here, EBW instances uses a WRPAC for authenticaing the presentation request, by selecting `x509_hash` as Client Identifier Prefix, similar to normal EUDIW operation.   It is TBD if WRPRC (registration certififates) are also needed, depending on the coming Regulation, but we think they can be skipped as there is not personal data requested and no need to registrer the intent according to GDPR.
+
+For large organizations with multiple WRP instances or multiple EBWs, using WRPAC may be the most feasible option, as separate software system can be more isolated. Also, the EUDIW concept of delegated authority to Intermediaries can be leverange
 
 In this option, the EBWOID is not used. 
 
