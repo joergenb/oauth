@@ -18,13 +18,13 @@ The terms client/relying party is used interchangably throughout the text.
 
 This document defines the following terms:
 
-Context Transfer: an OP-controlled transfer of session-related claims/attributes between two Relying Parties.
+* Context Transfer: an OP-controlled transfer of session-related claims/attributes between two Relying Parties.
 
-Receiving client: the destination relying party which receives the context.
+* Receiving client: the destination relying party which receives the context.
 
-Originating client:  the relying party which initiates the context transfer.
+* Originating client:  the relying party which initiates the context transfer.
 
-Contect Transfer Authentication:  The authentication process performed by the Receiving Client to complete the Context Transfer process.
+* Contect Transfer Authentication:  The authentication process performed by the Receiving Client to complete the Context Transfer process.
 
 
 # 3. Overview
@@ -33,6 +33,23 @@ There are two clients, A (originating) and B (receiving). They have up-front agr
 
 The end-user log in at client A, establishing a central session at OP, and a local session at client A.  The end-user makes some actions at client A which establishes a specific *context*. Client A decides that the End-User must go to client B to proceed with his user journey. Client A requests a context transfer from the OP, then redirects the End-user to client B with the context transfer reference. Client B initates an authorization request towards the OP and includes the context transfer reference. Provided that the request as well as the validitity of the End-user session at the OP can meet policy requirements, the OP will grant the request and proceed with the flow without end-user interaction. The transferred context will be made available to the client B in the id_token and/or the userinfo endpoint, per OP policy. 
 
+```mermaid
+sequenceDiagram
+  participant A as Originating client
+  participant OP as OpenID Provider
+  participant B as Receiving client
+
+
+  note over A, OP: End-user authenticates 
+  A-->>A: establish local context
+  A->>+OP: (1) Context transfer request
+  OP-->-A: context reference URI
+  A-->>B: reference URI is transferred
+  B->>+OP: Context Transfer Authentication
+  OP-->>-B: id_token with context
+  note over B: end-user is logged in with context
+
+```
 The core of this extension is to introduce a new Context Transfer endpoint at the OP, which is used by client A to initiate the process. This is descibed in chapter 5.  Also, a new value `ctx_transfer` for the `prompt` -parameter is introduced to be used by client B to complete the process. This is described in chapter 6.
 
 # 4. Scope
@@ -190,3 +207,19 @@ Another example of context transfer which will be needed in Norway is representa
 To just use links between the two webservices will be open for both leakage of information, as well as open for a number of attacks.  There is need for both integritety and potentially confidentiality in the context which must be transfered from client A to B.
 
 The two organizations can of course decide on a proprietary protocol and linking between themselves. However, if authentication and session managmement is not properly handled, they might unknowningly introduce security risks.  Therefore, it would be better building upon well-establised standards.
+
+
+# old
+
+
+graph LR
+  A[Originating client]
+  OP[OpenID Provider]
+  B[Receiving client]
+
+  A-. (1) authenticates .-> OP 
+  A--. (2) POST context --> OP
+  OP--. context reference UDI --> A
+  A -. link .-> B
+  B --. (3) authorization request --> OP
+  
