@@ -92,7 +92,7 @@ The following is an example for the payload of a Presentation Request grant:
   "nonce": "n-0S6_WzA2Mj"
 }
 ```
-
+Note: in an EBW-context, the verifer_attestation JWT can be the EBWOID, and the signature of the Presentation Request will demonstrate proof-of-possession of that EBWOID.
 
 # 6. Token endpoint
 
