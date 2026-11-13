@@ -1,3 +1,5 @@
+# OpenID4VP4BW - OpenID for Verifiable Credentials for Business Wallets
+
 # Abstract
 
 This document describes a profile (extention?) of OpenID for Verifiable Presentations for use cases where there is no human in the loop. 
