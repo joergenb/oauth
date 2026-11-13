@@ -6,9 +6,12 @@ This document describes a profile (extention?) of OpenID for Verifiable Presenta
 
 # 1. Introduction.
 
-A Business Wallet is a kind of wallet where the Holder is an organization, and not a human being.  Compared to wallets for natural persons, buiness wallets are cloud-based software, and not apps running on mobile devices.    
+A Business Wallet is a kind of wallet where the Holder is an organization, and not a human being.      
 
-OpenID4VP is based on an assumption that the same Holder is interacting with both the Verifier and the Wallet during presentation, and that the (human) Holder is using his web browser to orchestrate the presentation.  This assumption is not true for Buiness Wallets, which typically operate as automated systems without human involvement, thus there is no need for a browser-based flow.    Another aspect is that for business wallets will be different humans using the sending Wallet and receiving Wallet.
+OpenID4VP is based on an assumption that the same Holder is interacting with both the Verifier and the Wallet during presentation, and that the (human) Holder is using his web browser to orchestrate the presentation.  This assumption is not true for Buiness Wallets, which typically operate as automated systems without human involvement; ie: Business Wallet-based presentation is a machine-to-machine presentation, and thus there is no need for a browser-based flow over the Authorization endpoint.
+
+Another key difference is that the Verifer (aka. receiving Business Wallet), and Wallet (aka. sending BW) is controlled by different humans, so a common, redirect-based flow is not meaningful. 
+
 
 The profile described herein therefore skips the browser-based parts of openid4vp, by introducing a token endpoint for Wallets, from where Verifiers can request vp_tokens directly. A new grant_type for this purpose is also introduced. 
 
