@@ -15,7 +15,7 @@ Another key difference is that the Verifer (aka. receiving Business Wallet), and
 
 The profile described herein therefore skips the browser-based parts of openid4vp, by introducing a token endpoint for Wallets, from where Verifiers can request vp_tokens directly. A new grant_type for this purpose is also introduced. 
 
-There might be presentation scenarios between Business Wallets where there is a need to get human involvement, for example getting human approval before presenting busines-critical credentials. This document defines processing rules for such scenarios. 
+There might be presentation scenarios between Business Wallets where there is a need to get human involvement, for example getting empowered employee approval before presenting mission-critical credentials. This document defines processing rules for such scenarios. 
 
 
 # 2. Terminology 
