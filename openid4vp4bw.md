@@ -70,6 +70,8 @@ The content of the grant is a presentation request as specified by the baseline 
 The following is an example for the payload of a Presentation Request grant:
 ```
 {
+  "jwt": "eY..." // The EBWOID of Verifier
+}.{
   "iss": "verifier_attestation:NOFOR.123456789",
   "aud": "https://businesswallet.example.com/SEBOLREG.987654321",
   "response_type": "vp_token",
